@@ -1,0 +1,15 @@
+{
+  "name": "airship-repo",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Meta package: install and run each app from its own folder (AirShipApp, AirShipAdmin, AirShipBackend).",
+  "scripts": {
+    "install:all": "npm install --prefix AirShipApp && npm install --prefix AirShipAdmin && npm install --prefix AirShipBackend",
+    "start:app": "npm run start --prefix AirShipApp",
+    "start:admin": "npm run start --prefix AirShipAdmin",
+    "start:api": "npm run dev --prefix AirShipBackend",
+    "build:app": "npm run build --prefix AirShipApp",
+    "build:admin": "npm run build --prefix AirShipAdmin",
+    "build:api": "npm run build --prefix AirShipBackend"
+  }
+}

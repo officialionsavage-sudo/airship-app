@@ -1,0 +1,36 @@
+.sky-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.sky-bg canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.sky-fallback {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 78% 18%, rgba(255, 220, 170, 0.65), transparent 46%),
+    radial-gradient(circle at 22% 32%, rgba(120, 190, 255, 0.55), transparent 52%),
+    linear-gradient(180deg, #cfeaff 0%, #eaf7ff 45%, #ffffff 100%);
+}
+
+.sky-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 75% 22%, rgba(255, 255, 255, 0.18), transparent 46%),
+    radial-gradient(circle at 45% 60%, rgba(255, 255, 255, 0.12), transparent 62%);
+  mix-blend-mode: screen;
+  opacity: 0.85;
+}
+

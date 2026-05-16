@@ -1,0 +1,255 @@
+:root {
+  --admin-bg: #0b1220;
+  --admin-surface: #111827;
+  --admin-surface-2: #1f2937;
+  --admin-border: #334155;
+  --admin-text: #f1f5f9;
+  --admin-muted: #94a3b8;
+  --admin-accent: #38bdf8;
+  --admin-accent-dim: #0ea5e9;
+  --admin-danger: #f87171;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/** Fill viewport; shell owns internal scrolling so the window doesn’t scroll. */
+html {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background: var(--admin-bg);
+  color: var(--admin-text);
+  line-height: 1.45;
+}
+
+app-root {
+  display: block;
+  height: 100%;
+}
+
+a {
+  color: var(--admin-accent);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+.page-title {
+  margin: 0 0 1rem;
+  font-size: 1.35rem;
+}
+
+.page-intro {
+  margin: -0.35rem 0 1.1rem;
+  font-size: 0.95rem;
+  color: var(--admin-muted);
+  max-width: 52rem;
+  line-height: 1.5;
+}
+
+.admin-empty-state {
+  margin: 0 0 1rem;
+  padding: 1.25rem 1rem;
+  border-radius: 12px;
+  border: 1px dashed var(--admin-border);
+  background: rgba(15, 23, 42, 0.5);
+  color: var(--admin-muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.admin-empty-state strong {
+  color: var(--admin-text);
+}
+
+.admin-scroll {
+  overflow-x: auto;
+  max-height: min(70vh, 760px);
+  overflow-y: auto;
+  border: 1px solid var(--admin-border);
+  border-radius: 12px;
+  background: var(--admin-surface);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  min-width: 640px;
+}
+
+.admin-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--admin-surface);
+  box-shadow: 0 1px 0 var(--admin-border);
+  text-align: left;
+  padding: 0.65rem 0.85rem;
+  white-space: nowrap;
+}
+
+.admin-table tbody td {
+  padding: 0.55rem 0.85rem;
+  border-bottom: 1px solid var(--admin-border);
+  vertical-align: top;
+}
+
+.admin-table tbody tr:hover td {
+  background: rgba(56, 189, 248, 0.06);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
+  border: 1px solid var(--admin-border);
+  background: var(--admin-surface-2);
+  color: var(--admin-text);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.btn:hover {
+  border-color: var(--admin-accent);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #0284c7, #0ea5e9);
+  border-color: transparent;
+  color: #fff;
+}
+
+.btn-danger {
+  border-color: var(--admin-danger);
+  color: var(--admin-danger);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.85rem;
+}
+
+.field label {
+  font-size: 0.8rem;
+  color: var(--admin-muted);
+}
+
+/** Label row + info tooltip (used with app-admin-field-hint). */
+.field-label-with-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.2rem;
+}
+
+.field input,
+.field textarea,
+.field select {
+  padding: 0.45rem 0.55rem;
+  border-radius: 8px;
+  border: 1px solid var(--admin-border);
+  background: #020617;
+  color: var(--admin-text);
+}
+
+.field input:focus-visible,
+.field textarea:focus-visible,
+.field select:focus-visible,
+.btn:focus-visible {
+  outline: 2px solid var(--admin-accent);
+  outline-offset: 2px;
+}
+
+.err {
+  color: var(--admin-danger);
+  font-size: 0.88rem;
+  margin-top: 0.35rem;
+  line-height: 1.4;
+}
+
+.modal-scroll-form .err {
+  margin-top: 0.75rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: 8px;
+  background: rgba(248, 113, 113, 0.08);
+  border: 1px solid rgba(248, 113, 113, 0.25);
+}
+
+.field textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.admin-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.85rem;
+}
+
+.admin-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--admin-border);
+}
+
+.modal-scroll-form .field label.row-inline {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+@media (max-width: 900px) {
+  .admin-table-wrap-cards .admin-scroll {
+    border: none;
+    background: transparent;
+    max-height: none;
+    overflow: visible;
+  }
+  .admin-table-wrap-cards .admin-table {
+    display: none;
+  }
+  .admin-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+  .admin-card {
+    border: 1px solid var(--admin-border);
+    border-radius: 12px;
+    padding: 0.85rem;
+    background: var(--admin-surface);
+  }
+}
+
+@media (min-width: 901px) {
+  .admin-cards {
+    display: none;
+  }
+}

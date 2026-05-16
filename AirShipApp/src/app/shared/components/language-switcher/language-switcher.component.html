@@ -1,0 +1,55 @@
+<!-- Drawer / mobile menu: always-visible segmented list -->
+<div *ngIf="presentation === 'drawer'" class="lang-drawer">
+  <p class="lang-drawer-title">{{ 'nav.lang' | t }}</p>
+  <ul class="lang-drawer-list" role="listbox" [attr.aria-label]="'nav.lang' | t">
+    <li *ngFor="let code of codes; trackBy: trackByCode">
+      <button
+        type="button"
+        class="lang-drawer-option"
+        [class.lang-drawer-option--active]="code === localeSvc.locale"
+        [attr.aria-selected]="code === localeSvc.locale"
+        (click)="pick(code)"
+      >
+        <span class="lang-drawer-code">{{ code | uppercase }}</span>
+        <span class="lang-drawer-name">{{ labels[code] }}</span>
+        <span class="lang-drawer-check" aria-hidden="true" *ngIf="code === localeSvc.locale">✓</span>
+      </button>
+    </li>
+  </ul>
+</div>
+
+<!-- Desktop: compact trigger + floating panel -->
+<div *ngIf="presentation === 'dropdown'" class="lang-dropdown">
+  <button
+    type="button"
+    class="lang-dropdown-trigger"
+    (click)="toggleOpen(); $event.stopPropagation()"
+    [attr.aria-expanded]="open"
+    [attr.aria-haspopup]="true"
+    [attr.aria-label]="'nav.lang' | t"
+  >
+    <span class="lang-dropdown-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20" />
+      </svg>
+    </span>
+    <span class="lang-dropdown-current">{{ labels[localeSvc.locale] }}</span>
+    <span class="lang-dropdown-chevron" [class.lang-dropdown-chevron--open]="open" aria-hidden="true"></span>
+  </button>
+
+  <div *ngIf="open" class="lang-dropdown-panel" @panelInOut role="listbox" [attr.aria-label]="'nav.lang' | t">
+    <button
+      *ngFor="let code of codes; trackBy: trackByCode"
+      type="button"
+      class="lang-dropdown-row"
+      [class.lang-dropdown-row--active]="code === localeSvc.locale"
+      [attr.aria-selected]="code === localeSvc.locale"
+      (click)="pick(code)"
+    >
+      <span class="lang-dropdown-row-code">{{ code | uppercase }}</span>
+      <span class="lang-dropdown-row-name">{{ labels[code] }}</span>
+      <span class="lang-dropdown-row-tick" *ngIf="code === localeSvc.locale" aria-hidden="true">✓</span>
+    </button>
+  </div>
+</div>

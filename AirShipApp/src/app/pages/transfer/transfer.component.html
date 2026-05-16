@@ -1,0 +1,286 @@
+<section class="transfer-page page-container">
+  <header class="transfer-hero glass-card">
+    <div class="transfer-hero-bg" aria-hidden="true"></div>
+    <div class="transfer-hero-inner">
+      <div class="transfer-hero-copy">
+        <p class="kicker">{{ 'transfer.hero.kicker' | t }}</p>
+        <h1>{{ 'transfer.hero.title' | t }}</h1>
+        <p class="sub">{{ 'transfer.hero.sub' | t }}</p>
+      </div>
+      <div class="transfer-hero-art" aria-hidden="true">
+        <div class="pulse-ring r1"></div>
+        <div class="pulse-ring r2"></div>
+        <div class="pulse-ring r3"></div>
+        <div class="mini-card">
+          <strong>{{ 'transfer.miniCard.title' | t }}</strong>
+          <span>{{ 'transfer.miniCard.sub' | t }}</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="transfer-layout">
+    <article class="transfer-card glass-card">
+      <div class="tabs" role="tablist" [attr.aria-label]="'transfer.tabs.transfer' | t">
+        <button
+          type="button"
+          class="tab"
+          role="tab"
+          [attr.aria-selected]="activeTab === 'airport'"
+          [class.active]="activeTab === 'airport'"
+          (click)="setTab('airport')"
+        >
+          {{ 'transfer.tabs.transfer' | t }}
+        </button>
+        <button
+          type="button"
+          class="tab"
+          role="tab"
+          [attr.aria-selected]="activeTab === 'car'"
+          [class.active]="activeTab === 'car'"
+          (click)="setTab('car')"
+        >
+          {{ 'transfer.tabs.carRent' | t }}
+        </button>
+        <span class="tab-rail" aria-hidden="true"></span>
+        <span class="tab-indicator" aria-hidden="true" [class.right]="activeTab === 'car'"></span>
+      </div>
+
+      <div class="panel" role="tabpanel" *ngIf="activeTab === 'airport'">
+        <h2 class="panel-title">{{ 'transfer.airport.title' | t }}</h2>
+        <p class="panel-sub">{{ 'transfer.airport.sub' | t }}</p>
+
+        <form class="form" [formGroup]="airportForm" (ngSubmit)="submitAirport()">
+          <div class="grid two">
+            <label>
+              {{ 'transfer.form.firstName' | t }}
+              <input type="text" formControlName="firstName" placeholder="John" />
+            </label>
+            <label>
+              {{ 'transfer.form.lastName' | t }}
+              <input type="text" formControlName="lastName" placeholder="Doe" />
+            </label>
+          </div>
+
+          <div class="grid two">
+            <label>
+              {{ 'transfer.form.phone' | t }}
+              <input type="tel" formControlName="phone" placeholder="+20 123 456 7890" />
+            </label>
+            <label>
+              {{ 'transfer.form.email' | t }}
+              <input type="email" formControlName="email" placeholder="john@example.com" />
+            </label>
+          </div>
+
+          <label>
+            {{ 'transfer.form.country' | t }}
+            <select formControlName="country">
+              <option value="" disabled>{{ 'transfer.form.selectCountry' | t }}</option>
+              <option *ngFor="let c of countries" [value]="c">{{ c }}</option>
+            </select>
+          </label>
+
+          <div class="grid two">
+            <label>
+              {{ 'transfer.form.adults' | t }}
+              <input type="number" formControlName="adults" min="1" max="12" />
+            </label>
+            <label>
+              {{ 'transfer.form.child' | t }}
+              <input type="number" formControlName="child" min="0" max="12" />
+            </label>
+          </div>
+
+          <div class="grid two">
+            <label>
+              {{ 'transfer.form.pickUp' | t }}
+              <input type="text" formControlName="pickUpPoint" [placeholder]="'transfer.form.placeholderPickUp' | t" />
+            </label>
+            <label>
+              {{ 'transfer.form.dropOff' | t }}
+              <input type="text" formControlName="dropOffPoint" [placeholder]="'transfer.form.placeholderDropOff' | t" />
+            </label>
+          </div>
+
+          <div class="grid two">
+            <label>
+              {{ 'transfer.form.transferDate' | t }}
+              <input type="date" formControlName="transferDate" />
+            </label>
+            <label>
+              {{ 'transfer.form.transferTime' | t }}
+              <input type="time" formControlName="transferTime" />
+            </label>
+          </div>
+
+          <div class="grid two">
+            <label>
+              {{ 'transfer.vehicleType' | t }}
+              <select formControlName="vehicleType">
+                <option value="" disabled>{{ 'transfer.form.selectVehicle' | t }}</option>
+                <option *ngFor="let v of vehicleTypeRows" [value]="v.label">{{ v.label }}</option>
+              </select>
+            </label>
+            <label>
+              {{ 'transfer.form.transferType' | t }}
+              <select formControlName="transferType">
+                <option *ngFor="let opt of transferTypeOptions" [value]="opt.value">{{ opt.labelKey | t }}</option>
+              </select>
+            </label>
+          </div>
+
+          <label>
+            {{ 'transfer.form.comment' | t }}
+            <textarea rows="4" formControlName="comment" [placeholder]="'transfer.form.commentPlaceholder' | t"></textarea>
+          </label>
+
+          <p class="error" *ngIf="airportErrorKey && airportForm.invalid">{{ airportErrorKey | t }}</p>
+
+          <button class="submit" type="submit" [disabled]="submitting">
+            {{ submitting ? ('transfer.form.sending' | t) : ('transfer.form.submit' | t) }}
+          </button>
+        </form>
+      </div>
+
+      <div class="panel" role="tabpanel" *ngIf="activeTab === 'car'">
+        <h2 class="panel-title">{{ 'transfer.car.title' | t }}</h2>
+        <p class="panel-sub">{{ 'transfer.car.sub' | t }}</p>
+
+        <p class="muted" *ngIf="carsLoading">{{ 'transfer.car.loading' | t }}</p>
+        <p class="error" *ngIf="!carsLoading && carsError">{{ 'transfer.car.loadError' | t }}</p>
+        <p class="error" *ngIf="!carsLoading && !carsError && cars.length === 0">{{ 'transfer.car.emptyFleet' | t }}</p>
+
+        <form class="form" [formGroup]="carRentForm" (ngSubmit)="submitCarRent()">
+          <div class="grid two">
+            <label>
+              {{ 'transfer.form.firstName' | t }}
+              <input type="text" formControlName="firstName" placeholder="John" />
+            </label>
+            <label>
+              {{ 'transfer.form.lastName' | t }}
+              <input type="text" formControlName="lastName" placeholder="Doe" />
+            </label>
+          </div>
+
+          <div class="grid two">
+            <label>
+              {{ 'transfer.form.email' | t }}
+              <input type="email" formControlName="email" placeholder="john@example.com" />
+            </label>
+            <label>
+              {{ 'transfer.form.phone' | t }}
+              <input type="tel" formControlName="phone" placeholder="+20 123 456 7890" />
+            </label>
+          </div>
+
+          <div class="grid two">
+            <label>
+              {{ 'transfer.car.pickUpLoc' | t }}
+              <input type="text" formControlName="pickUpLocation" [placeholder]="'transfer.car.locPlaceholder' | t" />
+            </label>
+            <label>
+              {{ 'transfer.car.dropOffLoc' | t }}
+              <input type="text" formControlName="dropOffLocation" [placeholder]="'transfer.car.locPlaceholder' | t" />
+            </label>
+          </div>
+
+          <div class="grid two">
+            <label>
+              {{ 'transfer.car.pickUpDate' | t }}
+              <input type="date" formControlName="pickUpDate" />
+            </label>
+            <div class="toggle">
+              <span>{{ 'transfer.car.withDriver' | t }}</span>
+              <div class="toggle-buttons">
+                <button type="button" [class.active]="carRentForm.controls.withDriver.value" (click)="carRentForm.controls.withDriver.setValue(true)">
+                  {{ 'transfer.car.yes' | t }}
+                </button>
+                <button type="button" [class.active]="!carRentForm.controls.withDriver.value" (click)="carRentForm.controls.withDriver.setValue(false)">
+                  {{ 'transfer.car.no' | t }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <label>
+            {{ 'transfer.car.returnDate' | t }}
+            <input type="date" formControlName="returnDate" />
+          </label>
+
+          <div class="car-field">
+            <label>
+              {{ 'transfer.car.carType' | t }}
+              <button type="button" class="car-select" (click)="toggleCarPicker()" [attr.aria-expanded]="carPickerOpen">
+                <span class="car-select-main">
+                  <span class="car-select-title">{{ selectedCar?.name ?? ('transfer.car.selectCarType' | t) }}</span>
+                  <span class="car-select-sub" *ngIf="selectedCar">
+                    {{ selectedCar.type }} · {{ selectedCar.passengers }} {{ 'transfer.car.pax' | t }} · {{ selectedCar.luggage }}
+                    {{ 'transfer.car.luggage' | t }} · {{ 'common.egp' | t }} {{ selectedCar.pricePerDay | number }}{{ 'transfer.car.perDay' | t }}
+                  </span>
+                </span>
+                <span class="car-select-icon" aria-hidden="true"></span>
+              </button>
+            </label>
+
+            <div class="car-picker glass-card" *ngIf="carPickerOpen">
+              <div class="car-picker-head">
+                <div>
+                  <strong>{{ 'transfer.car.pickerTitle' | t }}</strong>
+                  <span>{{ carPage }}/{{ totalCarPages }}</span>
+                </div>
+                <button type="button" class="car-picker-close" (click)="closeCarPicker()" [attr.aria-label]="'transfer.car.close' | t">✕</button>
+              </div>
+
+              <div class="car-list">
+                <button type="button" class="car-item" *ngFor="let car of paginatedCars" (click)="selectCar(car.id)">
+                  <img [src]="car.image" [alt]="car.name" loading="lazy" />
+                  <div class="car-meta">
+                    <div class="car-name">{{ car.name }}</div>
+                    <div class="car-details">
+                      {{ car.type }} · {{ car.passengers }} {{ 'transfer.car.passengersWord' | t }} · {{ car.luggage }} {{ 'transfer.car.luggage' | t }}
+                    </div>
+                  </div>
+                  <div class="car-price">
+                    {{ 'common.egp' | t }} {{ car.pricePerDay | number }}<span>{{ 'transfer.car.perDay' | t }}</span>
+                  </div>
+                </button>
+              </div>
+
+              <div class="car-pagination">
+                <button type="button" (click)="prevCarPage()" [disabled]="carPage === 1">{{ 'common.prev' | t }}</button>
+                <button type="button" (click)="nextCarPage()" [disabled]="carPage === totalCarPages">{{ 'common.next' | t }}</button>
+              </div>
+            </div>
+          </div>
+
+          <label>
+            {{ 'transfer.form.comment' | t }}
+            <textarea rows="5" formControlName="comment" [placeholder]="'transfer.form.commentPlaceholder' | t"></textarea>
+          </label>
+
+          <p class="error" *ngIf="carErrorKey && carRentForm.invalid">{{ carErrorKey | t }}</p>
+
+          <button class="submit" type="submit" [disabled]="submitting">
+            {{ submitting ? ('transfer.form.sending' | t) : ('transfer.car.submit' | t) }}
+          </button>
+        </form>
+      </div>
+    </article>
+
+    <aside class="contact-card glass-card">
+      <h2>{{ 'transfer.contact.title' | t }}</h2>
+      <ul>
+        <li><strong>{{ 'transfer.contact.phone' | t }}:</strong> {{ contact.phone }}</li>
+        <li><strong>{{ 'transfer.contact.whatsapp' | t }}:</strong> {{ contact.whatsappDisplay }}</li>
+        <li><strong>{{ 'transfer.contact.email' | t }}:</strong> {{ contact.email }}</li>
+        <li><strong>{{ 'transfer.contact.location' | t }}:</strong> {{ contact.location }}</li>
+      </ul>
+      <div class="hours">
+        <h3>{{ 'transfer.contact.hours' | t }}</h3>
+        <p *ngFor="let line of contact.hoursLines">{{ line }}</p>
+      </div>
+      <p class="note">{{ 'transfer.contact.note' | t }}</p>
+    </aside>
+  </section>
+</section>

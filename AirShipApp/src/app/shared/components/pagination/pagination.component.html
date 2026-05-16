@@ -1,0 +1,5 @@
+<nav class="pagination" *ngIf="pages.length > 1">
+  <button *ngFor="let page of pages; trackBy: trackByPage" (click)="pageChange.emit(page)" [class.active]="page === currentPage">
+    {{ page }}
+  </button>
+</nav>

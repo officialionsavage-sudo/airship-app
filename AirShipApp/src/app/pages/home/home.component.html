@@ -1,0 +1,337 @@
+<section class="hero-new">
+  <div class="hero-new-bg" aria-hidden="true"></div>
+  <div class="hero-waves" aria-hidden="true">
+    <svg class="hero-waves-svg" viewBox="0 0 2880 200" preserveAspectRatio="none">
+      <g class="hero-wave hero-wave-1">
+        <path d="M0,120 C180,155 360,85 540,120 C720,155 900,85 1080,120 C1260,155 1440,85 1620,120 C1800,155 1980,85 2160,120 C2340,155 2520,85 2700,120 C2760,132 2820,144 2880,152 L2880,200 L0,200 Z" />
+        <path d="M0,120 C180,155 360,85 540,120 C720,155 900,85 1080,120 C1260,155 1440,85 1620,120 C1800,155 1980,85 2160,120 C2340,155 2520,85 2700,120 C2760,132 2820,144 2880,152 L2880,200 L0,200 Z" transform="translate(1440 0)" />
+      </g>
+      <g class="hero-wave hero-wave-2">
+        <path d="M0,140 C240,170 480,110 720,140 C960,170 1200,110 1440,140 C1680,170 1920,110 2160,140 C2400,170 2640,110 2880,140 L2880,200 L0,200 Z" />
+        <path d="M0,140 C240,170 480,110 720,140 C960,170 1200,110 1440,140 C1680,170 1920,110 2160,140 C2400,170 2640,110 2880,140 L2880,200 L0,200 Z" transform="translate(1440 0)" />
+      </g>
+      <g class="hero-wave hero-wave-3">
+        <path d="M0,160 C320,188 640,130 960,160 C1280,188 1600,130 1920,160 C2240,188 2560,130 2880,160 L2880,200 L0,200 Z" />
+        <path d="M0,160 C320,188 640,130 960,160 C1280,188 1600,130 1920,160 C2240,188 2560,130 2880,160 L2880,200 L0,200 Z" transform="translate(1440 0)" />
+      </g>
+    </svg>
+  </div>
+
+  <div class="hero-new-inner">
+    <article class="hero-new-copy">
+      <p class="hero-new-kicker">{{ homeContent.hero.kicker }}</p>
+      <h1 class="hero-new-title">
+        {{ homeContent.hero.titlePrefix }}<br>
+        <span class="hero-typing-shell">
+          <span class="hero-typing" [attr.aria-label]="homeContent.hero.typingAriaLabel ?? null">
+            <span class="hero-typing-text">{{ typedHeroText }}</span><span class="hero-typing-caret" aria-hidden="true"></span>
+          </span>
+        </span>
+      </h1>
+      <p class="hero-new-sub">
+        {{ homeContent.hero.subtitle }}
+      </p>
+
+      <div class="hero-cta">
+        <a
+          class="hero-cta-btn hero-cta-primary"
+          [href]="homeContent.hero.primaryCta.href"
+          (click)="scrollToPrimarySection($event)"
+        >
+          <span>{{ homeContent.hero.primaryCta.label }}</span>
+          <svg class="hero-cta-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M13.5 5.5a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.9l-4.4-4.4a1 1 0 0 1 0-1.4z"/>
+          </svg>
+        </a>
+        <a class="hero-cta-btn hero-cta-secondary" [routerLink]="homeContent.hero.secondaryCta.routerLink">
+          <span>{{ homeContent.hero.secondaryCta.label }}</span>
+          <span class="hero-cta-chip" *ngIf="homeContent.hero.secondaryCta.chip as chip">{{ chip }}</span>
+        </a>
+      </div>
+    </article>
+
+    <aside class="hero-brand-mark">
+      <div class="hero-brand-moon">
+        <div class="hero-brand-moon-halo" aria-hidden="true"></div>
+        <div class="hero-brand-moon-disk">
+          <img [src]="homeContent.hero.heroLogo.src" [attr.alt]="homeContent.hero.heroLogo.alt ?? 'AirShip'" />
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <button
+    type="button"
+    class="scroll-indicator"
+    (click)="scrollToPrimarySection($event)"
+    [attr.aria-label]="homeContent.hero.scrollIndicatorAriaLabel ?? homeContent.hero.scrollIndicatorLabel"
+  >
+    <span class="scroll-indicator-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+        <path d="M12 17.2a1 1 0 0 1-.7-.3l-6-6a1 1 0 1 1 1.4-1.4l5.3 5.3 5.3-5.3a1 1 0 0 1 1.4 1.4l-6 6a1 1 0 0 1-.7.3z"/>
+      </svg>
+    </span>
+    <span class="scroll-indicator-text">{{ homeContent.hero.scrollIndicatorLabel }}</span>
+  </button>
+</section>
+
+<section id="cities" class="cities-section">
+  <div class="section-head">
+    <h2>{{ homeContent.citiesSection.title }}</h2>
+    <p>{{ homeContent.citiesSection.description }}</p>
+  </div>
+  <div class="cities-carousel-wrap" *ngIf="cities$ | async as cities">
+    <button
+      type="button"
+      class="carousel-nav carousel-nav-prev"
+      aria-label="Scroll cities left"
+      (click)="scrollCitiesStrip(-1)"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+      </svg>
+    </button>
+    <div class="cities-hybrid" #citiesStrip>
+      <ng-container *ngFor="let city of cities; trackBy: trackByCity">
+      <a
+        *ngIf="!city.isComingSoon; else comingSoonCard"
+        class="city-card glass-card"
+        [routerLink]="['/city', city.slug]"
+        (mousemove)="updateCardInteraction($event)"
+        (mouseleave)="resetCardInteraction($event)"
+      >
+        <div class="city-image-wrap"><img [src]="city.image" [alt]="city.title" /></div>
+        <div class="city-content">
+          <h3>{{ city.title }}</h3>
+          <p>{{ city.shortDescription }}</p>
+        </div>
+      </a>
+      <ng-template #comingSoonCard>
+        <article
+          class="city-card glass-card coming-soon"
+          (mousemove)="updateCardInteraction($event)"
+          (mouseleave)="resetCardInteraction($event)"
+        >
+          <div class="city-image-wrap"><img [src]="city.image" [alt]="city.title" /></div>
+          <div class="city-content">
+            <h3>{{ city.title }}</h3>
+            <p>{{ city.shortDescription }}</p>
+            <span class="pill pill-coral">Coming Soon</span>
+          </div>
+        </article>
+      </ng-template>
+      </ng-container>
+    </div>
+    <button
+      type="button"
+      class="carousel-nav carousel-nav-next"
+      aria-label="Scroll cities right"
+      (click)="scrollCitiesStrip(1)"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+      </svg>
+    </button>
+  </div>
+</section>
+
+<section class="about-section glass-card">
+  <div class="about-shell">
+    <header class="about-head">
+      <p class="about-kicker">{{ homeContent.about.kicker }}</p>
+      <h2>{{ homeContent.about.title }}</h2>
+      <p class="about-lead">
+        {{ homeContent.about.lead }}
+      </p>
+    </header>
+
+    <div class="about-body">
+      <div class="about-copy">
+        <div class="about-points">
+          <div class="about-point" *ngFor="let point of homeContent.about.points; trackBy: trackByIndex">
+            <div class="about-point-title">{{ point.title }}</div>
+            <p>{{ point.body }}</p>
+          </div>
+        </div>
+
+        <div class="about-stats" aria-label="AirShip highlights">
+          <div class="about-stat" *ngFor="let stat of homeContent.about.stats; trackBy: trackByIndex">
+            <strong>{{ stat.value }}</strong>
+            <span>{{ stat.label }}</span>
+          </div>
+        </div>
+      </div>
+
+      <aside class="about-visual" aria-hidden="true">
+        <div class="about-portal">
+          <div class="about-orbit about-orbit-a"></div>
+          <div class="about-orbit about-orbit-b"></div>
+          <div class="about-orbit about-orbit-c"></div>
+
+          <div class="about-stack">
+            <div
+              class="about-card"
+              *ngFor="let card of homeContent.about.visualCards; let i = index; trackBy: trackByIndex"
+              [ngClass]="{
+                'about-card-primary': i === 0,
+                'about-card-secondary': i === 1,
+                'about-card-tertiary': i === 2,
+              }"
+            >
+              <div class="about-card-badge">{{ card.badge }}</div>
+              <div class="about-card-title">{{ card.title }}</div>
+              <div class="about-card-sub">{{ card.subtitle }}</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="testimonials-section">
+  <div class="testimonials-head">
+    <h2>{{ homeContent.testimonialsSection.title }}</h2>
+    <p>{{ homeContent.testimonialsSection.description }}</p>
+  </div>
+
+  <p class="reviews-empty muted" *ngIf="reviews.length === 0">{{ 'homeReviews.empty' | t }}</p>
+
+  <div class="testimonials-carousel" [class.has-nav]="reviews.length > 1">
+    <button
+      type="button"
+      class="carousel-nav carousel-nav-prev"
+      *ngIf="reviews.length > 1"
+      [attr.aria-label]="'homeReviews.prev' | t"
+      (click)="prevReview()"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+      </svg>
+    </button>
+    <div class="testimonial-slider glass-card">
+      <article
+        class="testimonial-card"
+        *ngFor="let review of reviews; let i = index"
+        [class.active]="i === activeReviewIndex"
+      >
+        <div class="rating" [attr.aria-label]="'Rating ' + review.rating + ' out of 5'">
+          <ng-container *ngFor="let _ of [].constructor(review.rating)">
+            <svg class="star" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path
+                d="M12 2.6l2.86 5.79 6.39.93-4.62 4.5 1.09 6.37L12 17.84 6.28 20.2l1.09-6.37-4.62-4.5 6.39-.93L12 2.6z"
+              />
+            </svg>
+          </ng-container>
+        </div>
+
+        <p class="quote">“{{ review.text }}”</p>
+
+        <div class="meta">
+          <div class="person">
+            <strong>{{ review.name }}</strong>
+            <span>{{ review.role }}</span>
+          </div>
+          <div class="score">{{ review.rating }}/5</div>
+        </div>
+      </article>
+    </div>
+    <button
+      type="button"
+      class="carousel-nav carousel-nav-next"
+      *ngIf="reviews.length > 1"
+      [attr.aria-label]="'homeReviews.next' | t"
+      (click)="nextReview()"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+      </svg>
+    </button>
+  </div>
+
+  <article
+    #reviewFormSection
+    class="review-form-card glass-card"
+    [class.review-form-card--visible]="reviewFormInView"
+  >
+    <div class="review-form-card__aurora" aria-hidden="true"></div>
+    <div class="review-form-card__shine" aria-hidden="true"></div>
+
+    <div class="review-form-card__inner">
+      <header class="review-form-header review-form-reveal" style="--reveal-i: 0">
+        <h3 class="review-form-title">{{ 'homeReviews.formTitle' | t }}</h3>
+        <p class="review-form-intro muted">{{ 'homeReviews.formIntro' | t }}</p>
+      </header>
+
+      <form class="review-form" [formGroup]="reviewForm" (ngSubmit)="submitReview()">
+        <label class="review-form-field review-form-reveal" style="--reveal-i: 1">
+          {{ 'homeReviews.name' | t }}
+          <input type="text" formControlName="name" autocomplete="name" />
+        </label>
+        <label class="review-form-field review-form-reveal" style="--reveal-i: 2">
+          {{ 'homeReviews.role' | t }}
+          <input type="text" formControlName="role" autocomplete="organization-title" />
+        </label>
+        <label class="review-form-field review-form-reveal" style="--reveal-i: 3">
+          {{ 'homeReviews.email' | t }}
+          <input type="email" formControlName="email" autocomplete="email" />
+        </label>
+
+        <div class="review-stars-field review-form-field review-form-reveal" style="--reveal-i: 4">
+          <span class="review-stars-label">{{ 'homeReviews.rating' | t }}</span>
+          <div
+            class="review-stars"
+            role="group"
+            [attr.aria-label]="'homeReviews.rating' | t"
+            [class.review-stars--pulse]="reviewStarsPulsing"
+          >
+            <button
+              type="button"
+              class="review-star-btn"
+              *ngFor="let star of reviewStars"
+              [class.active]="(reviewForm.get('rating')?.value ?? 0) >= star"
+              [class.lit]="(reviewForm.get('rating')?.value ?? 0) >= star"
+              [style.--star-i]="star - 1"
+              [attr.aria-label]="star + ' / 5'"
+              [attr.aria-pressed]="(reviewForm.get('rating')?.value ?? 0) >= star"
+              (click)="setReviewRating(star)"
+            >
+              <span class="review-star-btn__ring" aria-hidden="true"></span>
+              <svg class="star" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path
+                  d="M12 2.6l2.86 5.79 6.39.93-4.62 4.5 1.09 6.37L12 17.84 6.28 20.2l1.09-6.37-4.62-4.5 6.39-.93L12 2.6z"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <label class="review-form-field review-form-reveal" style="--reveal-i: 5">
+          {{ 'homeReviews.comment' | t }}
+          <textarea rows="4" formControlName="text"></textarea>
+        </label>
+
+        <p
+          class="review-form-error review-form-reveal"
+          style="--reveal-i: 6"
+          *ngIf="reviewForm.invalid && (reviewForm.touched || reviewForm.dirty)"
+        >
+          {{ 'homeReviews.formError' | t }}
+        </p>
+
+        <button
+          type="submit"
+          class="btn-primary review-submit review-form-reveal"
+          style="--reveal-i: 7"
+          [disabled]="reviewSubmitting"
+          [class.review-submit--busy]="reviewSubmitting"
+        >
+          <span class="review-submit__label">
+            {{ reviewSubmitting ? ('homeReviews.submitting' | t) : ('homeReviews.submit' | t) }}
+          </span>
+          <span class="review-submit__shine" aria-hidden="true"></span>
+        </button>
+      </form>
+    </div>
+  </article>
+</section>

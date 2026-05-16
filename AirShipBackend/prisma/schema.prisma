@@ -1,0 +1,308 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --- Catalog ---
+
+model City {
+  id               String           @id @default(cuid())
+  slug             String           @unique
+  title            String
+  shortDescription String
+  /// Full data URI (`data:image/...;base64,...`) or raw base64 body without whitespace-only payloads for SVG-safe uploads prefer data URIs.
+  imageBase64      String           @db.Text
+  heroImageBase64  String           @db.Text
+  /// City landing — Real Estate portal card (empty strings → API falls back to defaults / main card image).
+  portalRealEstateTitle       String @default("")
+  portalRealEstateDescription String @default("") @db.Text
+  portalRealEstateImageBase64 String @default("") @db.Text
+  portalToursTitle            String @default("")
+  portalToursDescription      String @default("") @db.Text
+  portalToursImageBase64      String @default("") @db.Text
+  portalTransportTitle        String @default("")
+  portalTransportDescription  String @default("") @db.Text
+  portalTransportImageBase64  String @default("") @db.Text
+  isComingSoon     Boolean          @default(false)
+  sortOrder        Int              @default(0)
+  projects         Project[]
+  tours            Tour[]
+  catalogFilters   CatalogFilter[]
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+}
+
+/// City-scoped listing filter (real-estate or tours). Assign to projects/tours in Admin; public pages read slugs from assignments.
+enum CatalogFilterDomain {
+  REAL_ESTATE
+  TOURS
+}
+
+model CatalogFilter {
+  id        String               @id @default(cuid())
+  cityId    String
+  city      City                 @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  domain    CatalogFilterDomain
+  title     String
+  slug      String
+  sortOrder Int                  @default(0)
+  projects  ProjectCatalogFilter[]
+  tours     TourCatalogFilter[]
+
+  @@unique([cityId, domain, slug])
+  @@index([cityId, domain])
+}
+
+model ProjectCatalogFilter {
+  projectId       String
+  catalogFilterId String
+  project         Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  catalogFilter   CatalogFilter @relation(fields: [catalogFilterId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, catalogFilterId])
+  @@index([catalogFilterId])
+}
+
+model TourCatalogFilter {
+  tourId          String
+  catalogFilterId String
+  tour            Tour          @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  catalogFilter   CatalogFilter @relation(fields: [catalogFilterId], references: [id], onDelete: Cascade)
+
+  @@id([tourId, catalogFilterId])
+  @@index([catalogFilterId])
+}
+
+model Project {
+  id               String        @id @default(cuid())
+  slug             String        @unique
+  cityId           String
+  city             City          @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  title            String
+  startingPrice    Int?
+  locationName     String
+  locationSlug     String
+  status           ProjectStatus
+  propertyType     PropertyType
+  description      String        @db.Text
+  shortDescription String
+  /// Gallery slots — each entry base64 / data URI.
+  images           String[]
+  heroImageBase64  String        @db.Text
+  features         String[]
+  amenities        String[]
+  developerName    String
+  deliveryDate     DateTime?
+  mapEmbedUrl      String
+  videoUrl         String
+  units            Unit[]
+  catalogFilterLinks ProjectCatalogFilter[]
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  @@index([cityId])
+  @@index([locationSlug])
+  @@index([status])
+  @@index([propertyType])
+}
+
+model Unit {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  projectId     String
+  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title         String
+  /// Gallery slots — each entry base64 / data URI.
+  images        String[]
+  size          Float
+  beds          Int
+  baths         Int
+  description   String   @db.Text
+  features      String[]
+  pricePerDay   Int
+  pricePerWeek  Int
+  pricePerMonth Int
+  discountDay   Int
+  discountWeek  Int
+  discountMonth Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([projectId])
+}
+
+model Tour {
+  id            String      @id @default(cuid())
+  slug          String      @unique
+  cityId        String
+  city          City        @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  title         String
+  type          TourType
+  rating        Float       @default(0)
+  startPrice    Int
+  duration      String
+  departureTime String
+  groupSize     String
+  overview      String      @db.Text
+  /// Gallery slots — each entry base64 / data URI.
+  images        String[]
+  itinerary     String[]
+  included      String[]
+  notIncluded   String[]
+  prices        TourPrice[]
+  catalogFilterLinks TourCatalogFilter[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([cityId])
+  @@index([type])
+}
+
+model TourPrice {
+  id              String @id @default(cuid())
+  tourId          String
+  tour            Tour   @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  label           String
+  amount          Int
+  discountPercent Int
+
+  @@index([tourId])
+}
+
+model Offer {
+  id              String    @id @default(cuid())
+  title           String
+  description     String    @db.Text
+  images          String[]
+  oldPrice        Int
+  newPrice        Int
+  discountPercent Int
+  highlights      String[]  @default([])
+  features        String[]  @default([])
+  included        String[]  @default([])
+  notIncluded     String[]  @default([])
+  terms           String?   @db.Text
+  validUntil      DateTime?
+  sortOrder       Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+/// Labels for airport transfer “vehicle type” dropdown (editable in Admin).
+model VehicleType {
+  id        String @id @default(cuid())
+  label     String
+  sortOrder Int    @default(0)
+}
+
+/// Transfer / car rental fleet row for public picker + admin CRUD.
+model Car {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  name          String
+  type          String
+  passengers    Int
+  luggage       Int
+  pricePerDay   Int
+  /// Data URI, https URL, or site-relative path (e.g. assets/…).
+  imageBase64   String   @db.Text
+  sortOrder     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// --- CMS / inbound ---
+
+model SiteContent {
+  key       String   @id
+  payload   Json
+  updatedAt DateTime @updatedAt
+}
+
+model SiteSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+model Review {
+  id         String       @id @default(cuid())
+  targetType ReviewTarget
+  targetSlug String?
+  name       String
+  email      String?
+  text       String       @db.Text
+  rating     Int
+  role       String?
+  citySlug   String?
+  status     ReviewStatus @default(pending)
+  createdAt  DateTime     @default(now())
+
+  @@index([status])
+  @@index([targetType])
+}
+
+model BookingInquiry {
+  id          String    @id @default(cuid())
+  fullName    String
+  phone       String
+  email       String?
+  citySlug    String
+  relatedSlug String
+  bookingType String
+  checkIn     DateTime?
+  checkOut    DateTime?
+  guests      Int?
+  notes       String?   @db.Text
+  createdAt   DateTime  @default(now())
+}
+
+model ContactInquiry {
+  id        String   @id @default(cuid())
+  fullName  String
+  phone     String
+  email     String?
+  subject   String
+  message   String   @db.Text
+  createdAt DateTime @default(now())
+}
+
+enum ProjectStatus {
+  launching
+  under_construction
+  ready
+}
+
+enum PropertyType {
+  apartment
+  villa
+  townhouse
+  chalet
+  studio
+}
+
+enum TourType {
+  sea
+  desert
+  island
+  city
+  adventure
+  wellness
+}
+
+enum ReviewTarget {
+  app
+  service
+  tour
+  project
+}
+
+enum ReviewStatus {
+  pending
+  approved
+  rejected
+}

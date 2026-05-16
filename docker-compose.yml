@@ -1,0 +1,33 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: airship
+      POSTGRES_PASSWORD: airship
+      POSTGRES_DB: airship
+    ports:
+      # Avoid clash with host Postgres on 5432
+      - '5433:5432'
+    volumes:
+      - airship_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U airship -d airship']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Lightweight web UI for Postgres (pick “PostgreSQL”, server `postgres`, DB `airship`).
+  adminer:
+    image: adminer:4
+    restart: unless-stopped
+    ports:
+      - '8080:8080'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+
+volumes:
+  airship_pgdata:

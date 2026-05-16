@@ -1,0 +1,31 @@
+.wa {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 28;
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(30, 169, 128, 0.22);
+  border: 1px solid rgba(30, 169, 128, 0.5);
+  box-shadow: none;
+  color: #0d3a2d;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  transition: transform 200ms ease, background 220ms ease, border-color 220ms ease;
+}
+
+.wa svg {
+  width: 26px;
+  height: 26px;
+  display: block;
+  fill: currentColor;
+}
+
+.wa:hover {
+  transform: translateY(-2px) scale(1.04);
+  background: rgba(30, 169, 128, 0.28);
+  border-color: rgba(30, 169, 128, 0.65);
+}

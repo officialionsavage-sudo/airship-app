@@ -1,0 +1,11 @@
+<div class="breadcrumb-wrap" *ngIf="items$ | async as items">
+  <ng-container *ngFor="let item of items; trackBy: trackByPath; let i = index">
+    <a class="chip glass-card" *ngIf="item.clickable; else currentChip" [routerLink]="item.path" [style.animation-delay.ms]="i * 70">
+      {{ item.label }}
+    </a>
+    <ng-template #currentChip>
+      <span class="chip current glass-card" [style.animation-delay.ms]="i * 70">{{ item.label }}</span>
+    </ng-template>
+    <span class="sep" *ngIf="i < items.length - 1" [style.animation-delay.ms]="i * 70">◈</span>
+  </ng-container>
+</div>

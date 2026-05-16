@@ -1,0 +1,149 @@
+.city-details {
+  display: grid;
+  gap: 1rem;
+}
+
+.hero-banner {
+  --depth: 0.3;
+  height: 25vh;
+  min-height: 190px;
+  max-height: 290px;
+  border-radius: 1.2rem;
+  overflow: hidden;
+  position: relative;
+  transform: translateY(calc(var(--depth) * -8px));
+}
+
+.hero-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.4rem;
+  padding: 1.2rem;
+  background: linear-gradient(180deg, rgba(3, 11, 30, 0.05), rgba(3, 13, 34, 0.7));
+}
+
+.hero-overlay p {
+  margin: 0;
+  color: #d8e8ff;
+}
+
+.hero-overlay h1 {
+  margin: 0;
+  font-size: clamp(1.7rem, 3.6vw, 2.8rem);
+  color: #ffffff;
+  text-shadow: 0 2px 14px rgba(2, 11, 31, 0.42);
+}
+
+.portal-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.portal-card {
+  --mx: 50%;
+  --my: 50%;
+  --rx: 0deg;
+  --ry: 0deg;
+  position: relative;
+  min-height: 236px;
+  border-radius: 1.25rem;
+  overflow: hidden;
+  border: 1px solid rgba(162, 202, 255, 0.24);
+  transform: perspective(1100px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(0);
+  transition: transform 280ms ease, box-shadow 320ms ease;
+}
+
+.portal-card:hover {
+  transform: perspective(1100px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(-6px);
+}
+
+.portal-card img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 360ms ease;
+}
+
+.portal-card:hover img {
+  transform: scale(1.07);
+}
+
+.portal-layer {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at var(--mx) var(--my), rgb(var(--brand-secondary-rgb) / 0.24), transparent 42%),
+    linear-gradient(165deg, rgba(4, 17, 44, 0.38), rgba(7, 26, 58, 0.8));
+}
+
+.real-estate .portal-layer {
+  background:
+    radial-gradient(circle at var(--mx) var(--my), rgb(var(--brand-secondary-rgb) / 0.3), transparent 44%),
+    linear-gradient(165deg, rgba(4, 17, 44, 0.38), rgba(7, 26, 58, 0.82));
+}
+
+.transportation .portal-layer {
+  background:
+    radial-gradient(circle at var(--mx) var(--my), rgba(48, 196, 160, 0.35), transparent 44%),
+    linear-gradient(165deg, rgba(4, 30, 28, 0.42), rgba(7, 40, 36, 0.82));
+}
+
+.portal-content {
+  position: absolute;
+  inset: auto 0 0;
+  padding: 1.2rem;
+  z-index: 2;
+}
+
+.portal-content h2,
+.portal-content p {
+  margin: 0;
+}
+
+.portal-content h2 {
+  color: #ffffff;
+  text-shadow: 0 2px 14px rgba(2, 11, 31, 0.42);
+}
+
+.portal-content p {
+  margin-top: 0.5rem;
+  color: rgba(245, 251, 255, 0.95);
+}
+
+.portal-btn.card-cta {
+  margin-top: 0.95rem;
+}
+
+@media (max-width: 1100px) {
+  .portal-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-banner {
+    height: 22vh;
+    min-height: 170px;
+  }
+
+  .portal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .portal-card {
+    min-height: 202px;
+    transform: none;
+  }
+}

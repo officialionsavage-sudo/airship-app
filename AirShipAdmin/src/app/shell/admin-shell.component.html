@@ -1,0 +1,66 @@
+<div class="shell" [class.menu-collapsed]="menuCollapsed">
+  <button
+    *ngIf="isMobileLayout && !menuCollapsed"
+    type="button"
+    class="sidebar-backdrop"
+    aria-label="Close menu"
+    (click)="menuCollapsed = true"
+  ></button>
+  <aside class="sidebar" aria-label="Admin navigation">
+    <div class="brand">AirShip <span>Admin</span></div>
+    <nav id="admin-sidebar-nav">
+      <ng-container *ngFor="let item of nav">
+        <a
+          *ngIf="isLink(item)"
+          [routerLink]="item.path"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="item.path === '/dashboard' ? { exact: true } : { exact: false }"
+          (click)="closeDrawerAfterNav()"
+          >{{ item.label }}</a
+        >
+
+        <div *ngIf="isGroup(item)" class="nav-group" [class.nav-group--expanded]="isGroupExpanded(item)">
+          <button
+            type="button"
+            class="nav-group-toggle"
+            [class.nav-group-toggle--active]="isGroupActive(item)"
+            [attr.aria-expanded]="isGroupExpanded(item)"
+            (click)="toggleGroup(item, $event)"
+          >
+            <span class="nav-group-label">{{ item.label }}</span>
+            <span class="nav-group-chevron" aria-hidden="true"></span>
+          </button>
+          <div *ngIf="isGroupExpanded(item)" class="nav-group-items" role="group" [attr.aria-label]="item.label">
+            <a
+              *ngFor="let child of item.children"
+              [routerLink]="child.path"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: false }"
+              (click)="closeDrawerAfterNav()"
+              >{{ child.label }}</a
+            >
+          </div>
+        </div>
+      </ng-container>
+    </nav>
+    <button type="button" class="logout btn" (click)="logout()">Sign out</button>
+  </aside>
+  <main class="main">
+    <div class="main-toolbar">
+      <button
+        type="button"
+        class="btn menu-toggle"
+        (click)="toggleMenu()"
+        [attr.aria-expanded]="!menuCollapsed"
+        aria-controls="admin-sidebar-nav"
+      >
+        {{ menuCollapsed ? '☰ Menu' : (isMobileLayout ? '⟨ Close' : '⟨ Hide menu') }}
+      </button>
+    </div>
+    <app-admin-notice-banner />
+    <div class="main-scroll">
+      <router-outlet />
+    </div>
+  </main>
+</div>
+<app-admin-confirm-host />

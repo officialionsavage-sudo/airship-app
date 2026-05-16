@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en" class="airship-boot-pending">
+  <head>
+    <meta charset="utf-8" />
+    <title>AirShip</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="airship-favicon.ico" />
+    <style>
+      /**
+       * First-paint splash only (`body::before` / `::after`). Do **not** set `visibility:hidden` on
+       * `<app-root>` — that breaks or deadlocks Angular client hydration so the tab spins forever on
+       * static hosts (e.g. Vercel). The gradient fully covers prerendered content underneath.
+       */
+      html.airship-boot-pending body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: 40;
+        background: linear-gradient(160deg, #f7fbff, #eef6ff);
+        pointer-events: none;
+      }
+      html.airship-boot-pending body::after {
+        content: 'Preparing your journey...';
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, calc(-50% + 52px));
+        z-index: 45;
+        margin: 0;
+        font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+        font-size: 0.95rem;
+        color: #436482;
+        pointer-events: none;
+        white-space: nowrap;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html.airship-boot-pending body::after {
+          transform: translate(-50%, -50%);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <app-root></app-root>
+  </body>
+</html>

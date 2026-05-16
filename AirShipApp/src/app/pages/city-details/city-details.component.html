@@ -1,0 +1,56 @@
+<section *ngIf="city$ | async as city" class="city-details">
+  <header class="hero-banner glass-card" [style.--depth]="routeDepth()">
+    <img [src]="city.heroImage" [alt]="city.title" />
+    <div class="hero-overlay">
+      <h1>{{ city.title }}</h1>
+      <p>{{ city.shortDescription }}</p>
+    </div>
+  </header>
+
+  <section class="portal-grid">
+    <a
+      class="portal-card real-estate"
+      [routerLink]="['/city', city.slug, 'real-estate']"
+      (mousemove)="updatePortalParallax($event)"
+      (mouseleave)="resetPortalParallax($event)"
+    >
+      <img [src]="city.portals.realEstate.image" [alt]="city.portals.realEstate.title" />
+      <div class="portal-layer"></div>
+      <div class="portal-content">
+        <h2>{{ city.portals.realEstate.title }}</h2>
+        <p>{{ city.portals.realEstate.description }}</p>
+        <span class="portal-btn card-cta">Explore Projects</span>
+      </div>
+    </a>
+
+    <a
+      class="portal-card tours"
+      [routerLink]="['/city', city.slug, 'tours']"
+      (mousemove)="updatePortalParallax($event)"
+      (mouseleave)="resetPortalParallax($event)"
+    >
+      <img [src]="city.portals.tours.image" [alt]="city.portals.tours.title" />
+      <div class="portal-layer"></div>
+      <div class="portal-content">
+        <h2>{{ city.portals.tours.title }}</h2>
+        <p>{{ city.portals.tours.description }}</p>
+        <span class="portal-btn card-cta">Explore Tours</span>
+      </div>
+    </a>
+
+    <a
+      class="portal-card transportation"
+      routerLink="/transfer"
+      (mousemove)="updatePortalParallax($event)"
+      (mouseleave)="resetPortalParallax($event)"
+    >
+      <img [src]="city.portals.transport.image" [alt]="city.portals.transport.title" />
+      <div class="portal-layer"></div>
+      <div class="portal-content">
+        <h2>{{ city.portals.transport.title }}</h2>
+        <p>{{ city.portals.transport.description }}</p>
+        <span class="portal-btn card-cta">View transfers</span>
+      </div>
+    </a>
+  </section>
+</section>

@@ -1,0 +1,102 @@
+<section class="unit-page" *ngIf="!loading && unit && project && city">
+  <section class="gallery glass-card reveal">
+    <img class="main-image" [src]="selectedImage" [alt]="unit.title" />
+    <div class="thumbs">
+      <button
+        type="button"
+        class="thumb"
+        *ngFor="let image of unit.images; let i = index"
+        [class.active]="selectedImageIndex === i"
+        (click)="selectImage(i)"
+      >
+        <img [src]="image" [alt]="unit.title + ' image ' + (i + 1)" />
+      </button>
+    </div>
+  </section>
+
+  <section class="content-grid">
+    <article class="details glass-card reveal">
+      <h1>{{ unit.title }}</h1>
+      <div class="info-row">
+        <span>{{ unit.beds }} {{ 'unit.beds' | t }}</span>
+        <span>{{ unit.baths }} {{ 'unit.baths' | t }}</span>
+        <span>{{ unit.size }} {{ 'unit.sqm' | t }}</span>
+      </div>
+      <p>{{ unit.description }}</p>
+
+      <div class="features-wrap">
+        <div>
+          <h3>{{ 'unit.unitFeatures' | t }}</h3>
+          <ul>
+            <li *ngFor="let feature of unit.features">{{ feature }}</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="pricing-panel pricing-panel--light">
+        <h3>{{ 'unit.pricingDetails' | t }}</h3>
+        <div class="pricing-showcase" role="list">
+          <article
+            class="price-tile"
+            [class.price-tile--deal]="unit.discounts.day > 0"
+            style="--tile-i: 0"
+            role="listitem"
+          >
+            <div class="price-tile__aurora" aria-hidden="true"></div>
+            <div class="price-tile__inner">
+              <span class="price-tile__badge" *ngIf="unit.discounts.day > 0">-{{ unit.discounts.day }}%</span>
+              <h4 class="price-tile__label">{{ 'unit.perDay' | t }}</h4>
+              <p *ngIf="unit.discounts.day > 0" class="price-tile__was">{{ 'common.egp' | t }} {{ unit.pricePerDay | number }}</p>
+              <p class="price-tile__now">{{ 'common.egp' | t }} {{ discountedDay | number }}</p>
+            </div>
+          </article>
+          <article
+            class="price-tile"
+            [class.price-tile--deal]="unit.discounts.week > 0"
+            style="--tile-i: 1"
+            role="listitem"
+          >
+            <div class="price-tile__aurora" aria-hidden="true"></div>
+            <div class="price-tile__inner">
+              <span class="price-tile__badge" *ngIf="unit.discounts.week > 0">-{{ unit.discounts.week }}%</span>
+              <h4 class="price-tile__label">{{ 'unit.perWeek' | t }}</h4>
+              <p *ngIf="unit.discounts.week > 0" class="price-tile__was">{{ 'common.egp' | t }} {{ unit.pricePerWeek | number }}</p>
+              <p class="price-tile__now">{{ 'common.egp' | t }} {{ discountedWeek | number }}</p>
+            </div>
+          </article>
+          <article
+            class="price-tile"
+            [class.price-tile--deal]="unit.discounts.month > 0"
+            style="--tile-i: 2"
+            role="listitem"
+          >
+            <div class="price-tile__aurora" aria-hidden="true"></div>
+            <div class="price-tile__inner">
+              <span class="price-tile__badge" *ngIf="unit.discounts.month > 0">-{{ unit.discounts.month }}%</span>
+              <h4 class="price-tile__label">{{ 'unit.perMonth' | t }}</h4>
+              <p *ngIf="unit.discounts.month > 0" class="price-tile__was">{{ 'common.egp' | t }} {{ unit.pricePerMonth | number }}</p>
+              <p class="price-tile__now">{{ 'common.egp' | t }} {{ discountedMonth | number }}</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </article>
+
+    <aside class="booking glass-card reveal">
+      <h2>{{ 'unit.bookStay' | t }}</h2>
+      <form [formGroup]="form" (ngSubmit)="submitBooking()">
+        <label>{{ 'unit.checkIn' | t }}<input type="date" formControlName="checkIn" /></label>
+        <label>{{ 'unit.checkOut' | t }}<input type="date" formControlName="checkOut" /></label>
+        <label>{{ 'unit.adults' | t }}<input type="number" formControlName="adults" min="1" /></label>
+        <label>{{ 'unit.children' | t }}<input type="number" formControlName="children" min="0" /></label>
+
+        <p class="error" *ngIf="form.invalid && (form.touched || form.dirty)">{{ 'unit.formError' | t }}</p>
+
+        <div class="actions">
+          <button type="submit" [disabled]="submitting">{{ submitting ? ('unit.booking' | t) : ('unit.bookNow' | t) }}</button>
+          <button type="button" class="wa" (click)="openWhatsApp()">{{ 'unit.whatsapp' | t }}</button>
+        </div>
+      </form>
+    </aside>
+  </section>
+</section>

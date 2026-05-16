@@ -1,0 +1,46 @@
+<section class="offers-page page-container">
+  <header class="glass-card page-head">
+    <span class="pill pill-coral">{{ 'offers.pill' | t }}</span>
+    <h1>{{ 'offers.title' | t }}</h1>
+    <p>{{ 'offers.subtitle' | t }}</p>
+  </header>
+
+  <app-loading-skeleton *ngIf="loading" [count]="pageSize"></app-loading-skeleton>
+
+  <section class="offers-grid" *ngIf="!loading && paginatedOffers.length > 0">
+    <a
+      class="offer-card glass-card"
+      *ngFor="let offer of paginatedOffers; trackBy: trackByOffer; let i = index"
+      [routerLink]="['/offers', offer.id]"
+      [style.animation-delay.ms]="i * 90"
+    >
+      <div class="media">
+        <img [src]="primaryImage(offer)" [alt]="offer.title" loading="lazy" />
+        <span class="discount-badge" *ngIf="offer.discountPercent > 0">-{{ offer.discountPercent }}%</span>
+      </div>
+      <div class="body">
+        <h3>{{ offer.title }}</h3>
+        <p class="meta" *ngIf="offer.highlights?.length">{{ offer.highlights[0] }}</p>
+        <p class="desc">{{ offer.description }}</p>
+        <p class="price">
+          <span class="price-was" *ngIf="offer.oldPrice > offer.newPrice">{{ 'common.egp' | t }} {{ offer.oldPrice | number }}</span>
+          {{ 'offers.from' | t }} {{ 'common.egp' | t }} {{ offer.newPrice | number }}
+        </p>
+        <span class="card-cta">{{ 'offers.viewDetails' | t }}</span>
+      </div>
+    </a>
+  </section>
+
+  <app-empty-state
+    *ngIf="!loading && errorLoadFailed"
+    [title]="'offers.error' | t"
+    [subtitle]="'offers.errorHint' | t"
+  ></app-empty-state>
+  <app-empty-state
+    *ngIf="!loading && !errorLoadFailed && paginatedOffers.length === 0"
+    [title]="'offers.empty' | t"
+    [subtitle]="'offers.subtitle' | t"
+  ></app-empty-state>
+
+  <app-pagination *ngIf="!loading && totalPages > 1" [pages]="pageNumbers" [currentPage]="currentPage" (pageChange)="goToPage($event)"></app-pagination>
+</section>

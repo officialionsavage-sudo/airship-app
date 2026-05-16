@@ -1,0 +1,274 @@
+.offer-page {
+  display: grid;
+  gap: 1rem;
+}
+
+.back-row {
+  display: flex;
+  align-items: center;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 700;
+  color: rgb(var(--brand-primary-rgb) / 1);
+  text-decoration: none;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.back-link--block {
+  margin-top: 0.75rem;
+}
+
+.not-found-wrap {
+  display: grid;
+  gap: 0.5rem;
+  justify-items: start;
+}
+
+.gallery {
+  padding: 0.85rem;
+}
+
+.main-image {
+  width: 100%;
+  height: 50vh;
+  max-height: 50vh;
+  object-fit: cover;
+  border-radius: 0.95rem;
+}
+
+.thumbs {
+  margin-top: 0.65rem;
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+}
+
+.thumb {
+  min-width: 88px;
+  width: 88px;
+  height: 68px;
+  border: 1px solid rgba(145, 193, 255, 0.35);
+  border-radius: 0.95rem;
+  overflow: hidden;
+  padding: 0;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.76);
+  transition: transform 180ms ease, border-color 220ms ease, box-shadow 220ms ease;
+}
+
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.74;
+}
+
+.thumb.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(15, 110, 184, 0.22);
+}
+
+.thumb.active img {
+  opacity: 1;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 0.7fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.details {
+  padding: 1rem;
+}
+
+.hero-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+  align-items: flex-start;
+}
+
+.hero-row h1 {
+  margin: 0;
+}
+
+.discount-badge {
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 124, 93, 0.5);
+  background: rgba(255, 124, 93, 0.2);
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.meta-row {
+  margin-top: 0.55rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.meta-row span {
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid rgba(145, 193, 255, 0.35);
+  font-size: 0.86rem;
+}
+
+.overview {
+  margin: 0.9rem 0 0;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.block {
+  margin-top: 0.9rem;
+}
+
+.block h3 {
+  margin: 0 0 0.45rem;
+}
+
+.feature-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--muted);
+  display: grid;
+  gap: 0.35rem;
+}
+
+.split-list {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem;
+}
+
+.split-list article {
+  border: 1px solid rgba(150, 196, 255, 0.22);
+  border-radius: 0.85rem;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.split-list h3 {
+  margin: 0;
+}
+
+.split-list ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1rem;
+  color: var(--muted);
+  display: grid;
+  gap: 0.3rem;
+}
+
+.pricing {
+  margin-top: 1rem;
+}
+
+.terms-block .terms {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.booking {
+  padding: 1rem;
+  position: sticky;
+  top: 6.8rem;
+}
+
+.booking h2 {
+  margin-top: 0;
+}
+
+form {
+  display: grid;
+  gap: 0.62rem;
+}
+
+label {
+  display: grid;
+  gap: 0.3rem;
+  color: var(--muted);
+}
+
+input {
+  border-radius: 0.7rem;
+  border: 1px solid rgba(145, 194, 255, 0.33);
+  background: rgba(255, 255, 255, 0.92);
+  color: #1f3b58;
+  padding: 0.58rem 0.7rem;
+}
+
+.total {
+  margin: 0.25rem 0 0;
+  font-weight: 600;
+}
+
+.error {
+  margin: 0;
+  color: #a23a2a;
+}
+
+.actions {
+  margin-top: 0.35rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+button {
+  border-radius: 999px;
+  border: 1px solid rgba(142, 206, 255, 0.4);
+  background: rgba(57, 170, 225, 0.18);
+  color: #1f3b58;
+  padding: 0.62rem 0.9rem;
+  cursor: pointer;
+}
+
+button.wa {
+  border-color: rgba(56, 224, 176, 0.55);
+  background: rgba(56, 224, 176, 0.2);
+}
+
+.reveal {
+  animation: revealUp 520ms ease both;
+}
+
+@keyframes revealUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1024px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .booking {
+    position: static;
+  }
+}
+
+@media (max-width: 760px) {
+  .split-list {
+    grid-template-columns: 1fr;
+  }
+}

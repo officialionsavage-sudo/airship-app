@@ -1,0 +1,56 @@
+<section class="real-estate-page page-container">
+  <header class="page-head glass-card">
+    <h1>Real Estate Projects in {{ cityName }}</h1>
+    <p>Discover high-end coastal opportunities with premium facilities and strong investment potential.</p>
+  </header>
+
+  <section class="filter-chip-row glass-card" role="region" aria-label="Filter projects by location">
+    <button
+      type="button"
+      class="filter-chip"
+      [class.filter-chip-active]="selectedLocation === 'all'"
+      [attr.aria-pressed]="selectedLocation === 'all'"
+      (click)="selectLocation('all')"
+    >
+      All locations
+    </button>
+    <button
+      type="button"
+      class="filter-chip"
+      *ngFor="let location of locationFilters"
+      [class.filter-chip-active]="selectedLocation === location.slug"
+      [attr.aria-pressed]="selectedLocation === location.slug"
+      (click)="selectLocation(location.slug)"
+    >
+      {{ location.title }}
+    </button>
+  </section>
+
+  <app-loading-skeleton *ngIf="loading" [count]="pageSize"></app-loading-skeleton>
+
+  <section class="projects-grid" *ngIf="!loading && paginatedProjects.length > 0">
+    <a class="project-card glass-card" *ngFor="let project of paginatedProjects; trackBy: trackBySlug; let i = index" [style.animation-delay.ms]="i * 90" [routerLink]="['/city', citySlug, 'real-estate', project.slug]">
+      <div class="media">
+        <img [src]="project.heroImage" [alt]="project.title" />
+        <span class="status-badge">{{ formatStatus(project.status) }}</span>
+      </div>
+
+      <div class="body">
+        <h3>{{ project.title }}</h3>
+        <p class="location">{{ project.locationName }}</p>
+        <p>{{ project.shortDescription }}</p>
+        <p class="price" *ngIf="project.startingPrice">Starting from EGP {{ project.startingPrice | number }}</p>
+        <div class="quick-facts">
+          <span>{{ project.amenities.length }} Facilities</span>
+          <span>{{ project.developerName }}</span>
+        </div>
+        <span class="card-cta">View Details</span>
+      </div>
+    </a>
+  </section>
+
+  <app-empty-state *ngIf="!loading && errorMessage" title="Error loading projects" [subtitle]="errorMessage"></app-empty-state>
+  <app-empty-state *ngIf="!loading && !errorMessage && paginatedProjects.length === 0" title="No matching projects found" subtitle="Try another location filter."></app-empty-state>
+
+  <app-pagination *ngIf="!loading && totalPages > 1" [pages]="pageNumbers" [currentPage]="currentPage" (pageChange)="goToPage($event)"></app-pagination>
+</section>

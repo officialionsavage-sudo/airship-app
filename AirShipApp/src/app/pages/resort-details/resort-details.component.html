@@ -1,0 +1,62 @@
+<section class="project-details-page" *ngIf="!loading && project as project">
+  <section class="gallery-shell glass-card reveal">
+    <div class="selected-media">
+      <img [src]="selectedImage || project.heroImage" [alt]="project.title" />
+    </div>
+    <div class="thumb-strip">
+      <button
+        type="button"
+        class="thumb"
+        *ngFor="let image of project.images; let i = index"
+        [class.active]="selectedImageIndex === i"
+        (click)="selectImage(image, i)"
+      >
+        <img [src]="image" [alt]="project.title + ' image ' + (i + 1)" />
+      </button>
+    </div>
+  </section>
+
+  <section class="glass-card info reveal">
+    <h1>{{ project.title }}</h1>
+    <p class="location">{{ project.locationName }} · {{ project.citySlug | titlecase }}</p>
+    <p>{{ project.description }}</p>
+  </section>
+
+  <section class="glass-card location-card reveal">
+    <h2>Location</h2>
+    <p>{{ project.locationName }}, {{ project.citySlug | titlecase }}, Egypt</p>
+    <p class="hint">Open this destination in Google Maps for directions and nearby places.</p>
+    <button class="btn-primary" type="button" (click)="openProjectLocation()">Open Location</button>
+  </section>
+
+  <section class="feature-grid-wrap reveal">
+    <article class="glass-card feature-group">
+      <h3>Facilities</h3>
+      <ul>
+        <li *ngFor="let amenity of project.amenities">{{ amenity }}</li>
+      </ul>
+    </article>
+    <article class="glass-card feature-group">
+      <h3>Features</h3>
+      <ul>
+        <li *ngFor="let feature of project.features">{{ feature }}</li>
+      </ul>
+    </article>
+  </section>
+
+  <section class="units-section reveal">
+    <h2>Available Units</h2>
+    <div class="units-grid">
+      <article class="unit-card glass-card" *ngFor="let unit of project.units; let i = index" [style.animation-delay.ms]="i * 90">
+        <img [routerLink]="['/city', project.citySlug, 'real-estate', project.slug, 'unit', unit.slug]" [src]="unit.images[0]" [alt]="unit.title" />
+        <div class="unit-body">
+          <h3>{{ unit.title }}</h3>
+          <p>{{ unit.size }} sqm · {{ unit.beds }} beds · {{ unit.baths }} baths</p>
+          <p class="price">From EGP {{ unit.pricePerMonth | number }} / month</p>
+          <a [routerLink]="['/city', project.citySlug, 'real-estate', project.slug, 'unit', unit.slug]" class="card-cta">View Details</a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+</section>

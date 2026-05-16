@@ -1,0 +1,27 @@
+.footer {
+  padding: 1rem 1.2rem;
+  text-align: center;
+  color: var(--muted);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.84), rgba(240, 248, 255, 0.78));
+  border: 1px solid rgba(145, 178, 214, 0.24);
+  font-family: var(--font-sans);
+}
+
+:host-context(html[dir='rtl']) .footer {
+  font-family: var(--font-sans-rtl);
+}
+
+.footer img {
+  height: 54px;
+  width: auto;
+  border-radius: 0;
+  margin: 0 auto 0.5rem;
+}
+
+.footer .tagline {
+  margin: 0;
+  max-width: 36rem;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.45;
+}

@@ -1,0 +1,62 @@
+.breadcrumb-wrap {
+  display: flex;
+  gap: 0.45rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+  padding-bottom: 0.18rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.72rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  line-height: 1.15;
+  color: var(--color-text-primary);
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(122, 165, 208, 0.28);
+  white-space: nowrap;
+  animation: chipIn 460ms ease both;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+a.chip:hover {
+  transform: translateY(-2px) rotateX(4deg);
+  border-color: rgb(var(--brand-secondary-rgb) / 0.55);
+  color: var(--color-brand-primary);
+}
+
+a.chip:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.chip.current {
+  color: var(--color-brand-primary);
+  border-color: rgb(var(--brand-secondary-rgb) / 0.45);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.98), rgba(237, 247, 255, 0.9));
+}
+
+.sep {
+  color: rgb(var(--brand-secondary-rgb) / 0.7);
+  animation: sepPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes chipIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes sepPulse {
+  50% {
+    opacity: 0.45;
+    transform: scale(1.2);
+  }
+}

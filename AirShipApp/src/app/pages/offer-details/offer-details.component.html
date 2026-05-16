@@ -1,0 +1,111 @@
+<section class="offer-page page-container" *ngIf="!loading && offer">
+  <nav class="back-row">
+    <a routerLink="/offers" class="back-link">{{ 'offers.detailBack' | t }}</a>
+  </nav>
+
+  <section class="gallery glass-card reveal">
+    <img class="main-image" [src]="selectedImage" [alt]="offer.title" />
+    <div class="thumbs" *ngIf="offer.images?.length">
+      <button
+        type="button"
+        class="thumb"
+        *ngFor="let image of offer.images; let i = index"
+        [class.active]="selectedImageIndex === i"
+        (click)="selectImage(i)"
+      >
+        <img [src]="image" [alt]="offer.title + ' image ' + (i + 1)" />
+      </button>
+    </div>
+  </section>
+
+  <section class="content-grid">
+    <article class="details glass-card reveal">
+      <header class="hero-row">
+        <h1>{{ offer.title }}</h1>
+        <span class="discount-badge" *ngIf="offer.discountPercent > 0">-{{ offer.discountPercent }}%</span>
+      </header>
+
+      <div class="meta-row" *ngIf="offer.highlights?.length || offer.validUntil">
+        <span *ngFor="let h of offer.highlights">{{ h }}</span>
+        <span *ngIf="offer.validUntil">{{ 'offers.validUntil' | t }}: {{ formatValidUntil(offer.validUntil) }}</span>
+      </div>
+
+      <p class="overview">{{ offer.description }}</p>
+
+      <section class="block" *ngIf="offer.features?.length">
+        <h3>{{ 'offers.features' | t }}</h3>
+        <ul class="feature-list">
+          <li *ngFor="let f of offer.features">{{ f }}</li>
+        </ul>
+      </section>
+
+      <section class="split-list" *ngIf="offer.included?.length || offer.notIncluded?.length">
+        <article *ngIf="offer.included?.length">
+          <h3>{{ 'offers.included' | t }}</h3>
+          <ul>
+            <li *ngFor="let item of offer.included">{{ item }}</li>
+          </ul>
+        </article>
+        <article *ngIf="offer.notIncluded?.length">
+          <h3>{{ 'offers.notIncluded' | t }}</h3>
+          <ul>
+            <li *ngFor="let item of offer.notIncluded">{{ item }}</li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="pricing" *ngIf="offer.oldPrice > 0 || offer.newPrice > 0">
+        <div class="pricing-panel pricing-panel--light">
+          <h3>{{ 'offers.pricing' | t }}</h3>
+          <div class="pricing-showcase" role="list">
+            <article
+              class="price-tile"
+              [class.price-tile--deal]="offer.discountPercent > 0"
+              style="--tile-i: 0"
+              role="listitem"
+            >
+              <div class="price-tile__aurora" aria-hidden="true"></div>
+              <div class="price-tile__inner">
+                <span class="price-tile__badge" *ngIf="offer.discountPercent > 0">-{{ offer.discountPercent }}%</span>
+                <h4 class="price-tile__label">{{ 'offers.promoPrice' | t }}</h4>
+                <p class="price-tile__was" *ngIf="offer.oldPrice > offer.newPrice">
+                  {{ 'common.egp' | t }} {{ offer.oldPrice | number }}
+                </p>
+                <p class="price-tile__now">{{ 'common.egp' | t }} {{ offer.newPrice | number }}</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="block terms-block" *ngIf="offer.terms">
+        <h3>{{ 'offers.terms' | t }}</h3>
+        <p class="terms">{{ offer.terms }}</p>
+      </section>
+    </article>
+
+    <aside class="booking glass-card reveal">
+      <h2>{{ 'offers.bookOffer' | t }}</h2>
+      <form [formGroup]="form" (ngSubmit)="submitBooking()">
+        <label>{{ 'offers.preferredDate' | t }}<input type="date" formControlName="date" /></label>
+        <label>{{ 'offers.adults' | t }}<input type="number" formControlName="adults" min="1" /></label>
+        <label>{{ 'offers.children' | t }}<input type="number" formControlName="children" min="0" /></label>
+        <p class="total">{{ 'offers.total' | t }}: {{ 'common.egp' | t }} {{ totalPrice | number }}</p>
+        <p class="error" *ngIf="form.invalid && (form.touched || form.dirty)">{{ 'offers.formError' | t }}</p>
+        <div class="actions">
+          <button type="submit" [disabled]="submitting">{{ submitting ? ('offers.booking' | t) : ('offers.bookNow' | t) }}</button>
+          <button type="button" class="wa" (click)="openWhatsApp()">{{ 'offers.whatsapp' | t }}</button>
+        </div>
+      </form>
+    </aside>
+  </section>
+</section>
+
+<section class="offer-detail page-container" *ngIf="loading">
+  <app-loading-skeleton [count]="1"></app-loading-skeleton>
+</section>
+
+<div class="not-found-wrap page-container" *ngIf="!loading && notFound">
+  <app-empty-state [title]="'offers.detailNotFound' | t" [subtitle]="'offers.detailBackHint' | t"></app-empty-state>
+  <a routerLink="/offers" class="back-link back-link--block">{{ 'offers.detailBack' | t }}</a>
+</div>

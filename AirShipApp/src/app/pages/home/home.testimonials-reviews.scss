@@ -1,0 +1,589 @@
+.about-card-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.26rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgb(var(--brand-primary-rgb) / 1);
+  background: rgb(var(--brand-secondary-rgb) / 0.12);
+  border: 1px solid rgb(var(--brand-secondary-rgb) / 0.22);
+}
+
+.about-card-title {
+  margin-top: 0.65rem;
+  font-size: 1.25rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: rgba(13, 46, 77, 0.92);
+}
+
+.about-card-sub {
+  margin-top: 0.25rem;
+  color: #5b7a95;
+}
+
+.testimonials-head {
+  display: grid;
+  gap: 0.25rem;
+  margin-top: 1.1rem;
+}
+
+.testimonials-head h2 {
+  margin: 0;
+}
+
+.testimonials-head p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.testimonials-carousel {
+  margin-top: 0.8rem;
+}
+
+.testimonial-slider {
+  margin-top: 0;
+  padding: 1.4rem;
+  position: relative;
+  min-height: 170px;
+  min-width: 0;
+}
+
+.testimonial-card {
+  position: absolute;
+  inset: 1.4rem;
+  opacity: 0;
+  transform: translateY(12px) scale(.98);
+  transition: opacity .42s ease, transform .42s ease;
+}
+
+.testimonial-card.active { opacity: 1; transform: translateY(0) scale(1); }
+
+.rating {
+  display: inline-flex;
+  gap: 0.25rem;
+  align-items: center;
+  padding: 0.28rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgb(var(--brand-secondary-rgb) / 0.25);
+  background: rgb(var(--brand-secondary-rgb) / 0.12);
+}
+
+.star {
+  width: 16px;
+  height: 16px;
+  fill: rgb(var(--brand-secondary-rgb) / 1);
+  filter: drop-shadow(0 0 10px rgb(var(--brand-secondary-rgb) / 0.18));
+}
+
+.quote {
+  margin: 0.7rem 0 0;
+  font-size: 1.12rem;
+  line-height: 1.55;
+  color: var(--color-text-primary);
+  overflow-wrap: anywhere;
+}
+
+.meta {
+  margin-top: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 0.8rem;
+}
+
+.person {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.person strong {
+  color: var(--color-text-primary);
+}
+
+.person span {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.score {
+  color: var(--color-brand-primary);
+  font-weight: 800;
+  background: rgb(var(--brand-secondary-rgb) / 0.12);
+  border: 1px solid rgb(var(--brand-secondary-rgb) / 0.22);
+  border-radius: 999px;
+  padding: 0.25rem 0.55rem;
+}
+
+.reviews-empty {
+  margin: 0.75rem 0 0;
+  font-size: 0.95rem;
+}
+
+.review-form-card {
+  --review-border-angle: 0deg;
+  position: relative;
+  margin-top: 1.35rem;
+  padding: 0;
+  overflow: hidden;
+  isolation: isolate;
+  border: 1.5px solid transparent;
+  background:
+    linear-gradient(168deg, rgba(255, 255, 255, 0.94), rgba(244, 250, 255, 0.88)) padding-box,
+    linear-gradient(
+        var(--review-border-angle),
+        rgb(var(--brand-secondary-rgb) / 0.55),
+        rgb(var(--brand-primary-rgb) / 0.35) 38%,
+        rgba(180, 220, 255, 0.5) 72%,
+        rgb(var(--brand-secondary-rgb) / 0.45)
+      )
+      border-box;
+  box-shadow: 0 16px 42px rgba(13, 46, 77, 0.12);
+  opacity: 0;
+  transform: translateY(32px) scale(0.97);
+  transition:
+    box-shadow 0.4s ease,
+    transform 0.4s cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+.review-form-card--visible {
+  animation:
+    reviewCardEnter 0.9s cubic-bezier(0.18, 0.9, 0.22, 1) forwards,
+    reviewBorderSpin 10s linear infinite;
+}
+
+.review-form-card__aurora {
+  position: absolute;
+  inset: -45%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 25% 35%, rgb(var(--brand-secondary-rgb) / 0.28), transparent 52%),
+    radial-gradient(circle at 78% 68%, rgb(var(--brand-primary-rgb) / 0.2), transparent 48%);
+  filter: blur(32px);
+  opacity: 0.65;
+}
+
+.review-form-card--visible .review-form-card__aurora {
+  animation: reviewAuroraDrift 7s ease-in-out infinite;
+}
+
+.review-form-card__shine {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    transparent 42%,
+    rgba(255, 255, 255, 0.45) 50%,
+    transparent 58%,
+    transparent 100%
+  );
+  transform: translateX(-120%);
+}
+
+.review-form-card--visible .review-form-card__shine {
+  animation: reviewShineSweep 4.8s ease-in-out 0.6s infinite;
+}
+
+.review-form-card__inner {
+  position: relative;
+  z-index: 2;
+  padding: clamp(1.15rem, 2.6vw, 1.75rem);
+  display: grid;
+  gap: 0.85rem;
+}
+
+.review-form-header {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.review-form-title {
+  margin: 0;
+  font-size: clamp(1.2rem, 2.2vw, 1.45rem);
+  letter-spacing: -0.02em;
+  background: linear-gradient(120deg, rgba(13, 46, 77, 0.95), rgb(var(--brand-primary-rgb) / 0.88));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.review-form-intro {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.review-form-reveal {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.review-form-card--visible .review-form-reveal {
+  animation: reviewFieldReveal 0.62s cubic-bezier(0.2, 0.9, 0.2, 1) forwards;
+  animation-delay: calc(0.22s + (var(--reveal-i, 0) * 0.07s));
+}
+
+.review-form {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.review-form-field {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.review-form-field input,
+.review-form-field textarea {
+  width: 100%;
+  padding: 0.68rem 0.8rem;
+  border-radius: 10px;
+  border: 1px solid rgba(130, 166, 205, 0.35);
+  background: rgba(255, 255, 255, 0.78);
+  font: inherit;
+  color: inherit;
+  transition:
+    border-color 0.22s ease,
+    box-shadow 0.22s ease,
+    transform 0.22s ease;
+}
+
+.review-form-field input:hover,
+.review-form-field textarea:hover {
+  border-color: rgb(var(--brand-secondary-rgb) / 0.35);
+}
+
+.review-form-field input:focus,
+.review-form-field textarea:focus {
+  outline: none;
+  border-color: rgb(var(--brand-secondary-rgb) / 0.55);
+  box-shadow:
+    0 0 0 3px rgb(var(--brand-secondary-rgb) / 0.16),
+    0 8px 22px rgba(15, 110, 184, 0.1);
+  transform: translateY(-1px);
+}
+
+.review-stars-field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.review-stars-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.review-stars {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.review-star-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem;
+  border: 1px solid rgba(130, 166, 205, 0.35);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.65);
+  cursor: pointer;
+  opacity: 0;
+  transform: scale(0.55) rotate(-14deg);
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.28s cubic-bezier(0.34, 1.35, 0.64, 1),
+    box-shadow 0.2s ease;
+}
+
+.review-form-card--visible .review-star-btn {
+  animation: reviewStarPop 0.55s cubic-bezier(0.34, 1.45, 0.64, 1) forwards;
+  animation-delay: calc(0.55s + (var(--star-i, 0) * 0.08s));
+}
+
+.review-star-btn__ring {
+  position: absolute;
+  inset: -3px;
+  border-radius: 12px;
+  border: 2px solid rgb(var(--brand-secondary-rgb) / 0.55);
+  opacity: 0;
+  transform: scale(0.85);
+  pointer-events: none;
+}
+
+.review-star-btn .star {
+  position: relative;
+  z-index: 1;
+  width: 24px;
+  height: 24px;
+  fill: rgba(130, 166, 205, 0.42);
+  transition:
+    fill 0.2s ease,
+    filter 0.2s ease,
+    transform 0.28s cubic-bezier(0.34, 1.35, 0.64, 1);
+}
+
+.review-star-btn:hover {
+  transform: scale(1.14) translateY(-3px);
+  border-color: rgb(var(--brand-secondary-rgb) / 0.45);
+  box-shadow: 0 10px 24px rgba(15, 110, 184, 0.14);
+}
+
+.review-star-btn:hover .star {
+  fill: rgb(var(--brand-secondary-rgb) / 0.75);
+}
+
+.review-star-btn.active,
+.review-star-btn.lit {
+  border-color: rgb(var(--brand-secondary-rgb) / 0.55);
+  background: rgb(var(--brand-secondary-rgb) / 0.14);
+}
+
+.review-star-btn.active .star,
+.review-star-btn.lit .star {
+  fill: rgb(var(--brand-secondary-rgb) / 1);
+  filter: drop-shadow(0 0 10px rgb(var(--brand-secondary-rgb) / 0.35));
+}
+
+.review-stars--pulse .review-star-btn.lit .star {
+  animation: reviewStarTwinkle 0.48s ease;
+}
+
+.review-stars--pulse .review-star-btn.lit .review-star-btn__ring {
+  animation: reviewStarRing 0.52s ease;
+}
+
+.review-form-error {
+  margin: 0;
+  color: #c62828;
+  font-size: 0.88rem;
+}
+
+.review-submit {
+  position: relative;
+  justify-self: start;
+  margin-top: 0.25rem;
+  overflow: hidden;
+  border: none;
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.review-submit__label {
+  position: relative;
+  z-index: 1;
+}
+
+.review-submit__shine {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.35) 48%,
+    transparent 100%
+  );
+  transform: translateX(-130%);
+  pointer-events: none;
+}
+
+.review-submit:hover:not(:disabled) .review-submit__shine {
+  animation: reviewShineSweep 0.85s ease;
+}
+
+.review-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(15, 110, 184, 0.28);
+}
+
+.review-submit:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+.review-submit--busy {
+  opacity: 0.88;
+  pointer-events: none;
+}
+
+.review-submit--busy .review-submit__label {
+  animation: reviewSubmitPulse 0.9s ease-in-out infinite;
+}
+
+@keyframes reviewCardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(32px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes reviewBorderSpin {
+  to {
+    --review-border-angle: 360deg;
+  }
+}
+
+@property --review-border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes reviewAuroraDrift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translate(3%, -4%) scale(1.06);
+    opacity: 0.75;
+  }
+}
+
+@keyframes reviewShineSweep {
+  0% {
+    transform: translateX(-120%);
+  }
+  45%,
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+@keyframes reviewFieldReveal {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes reviewStarPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.55) rotate(-14deg);
+  }
+  70% {
+    transform: scale(1.12) rotate(4deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+
+@keyframes reviewStarTwinkle {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.22);
+  }
+}
+
+@keyframes reviewStarRing {
+  0% {
+    opacity: 0.7;
+    transform: scale(0.85);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.35);
+  }
+}
+
+@keyframes reviewSubmitPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.65;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .review-form-card {
+    opacity: 1;
+    transform: none;
+    animation: none !important;
+  }
+  .review-form-card--visible .review-form-card__aurora,
+  .review-form-card--visible .review-form-card__shine,
+  .review-form-card--visible .review-form-reveal,
+  .review-form-card--visible .review-star-btn,
+  .review-stars--pulse .review-star-btn.lit .star,
+  .review-stars--pulse .review-star-btn.lit .review-star-btn__ring,
+  .review-submit--busy .review-submit__label {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
+  .review-form-reveal,
+  .review-star-btn {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 1024px) {
+  .testimonials-carousel.has-nav {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.55rem;
+    align-items: stretch;
+  }
+
+  .testimonials-carousel.has-nav .carousel-nav {
+    display: grid;
+    align-self: center;
+  }
+
+  .testimonial-slider {
+    min-height: 240px;
+  }
+}
+
+@media (max-width: 768px) {
+  .testimonial-slider {
+    min-height: 280px;
+  }
+}
+
+@media (max-width: 640px) {
+  .meta {
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .testimonial-slider {
+    min-height: clamp(320px, 72vw, 440px);
+    padding: 1.25rem 1.15rem;
+  }
+
+  .testimonial-card {
+    inset: 1.25rem 1.15rem;
+  }
+}

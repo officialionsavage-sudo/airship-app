@@ -1,0 +1,26 @@
+.booking {
+  display: grid;
+  gap: 0.7rem;
+  padding: 1rem;
+}
+
+input,
+textarea,
+button {
+  border-radius: 0.7rem;
+  border: 1px solid rgba(140, 190, 255, 0.35);
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--color-text-primary);
+  padding: 0.7rem;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-text-muted);
+}
+
+button {
+  background: rgb(var(--brand-secondary-rgb) / 0.16);
+  color: var(--color-brand-primary);
+  font-weight: 600;
+}

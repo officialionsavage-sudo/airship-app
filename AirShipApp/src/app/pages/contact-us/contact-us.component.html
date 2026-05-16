@@ -1,0 +1,47 @@
+<section class="contact-page">
+  <header class="glass-card head">
+    <h1>{{ 'contactPage.title' | t }}</h1>
+    <p>{{ 'contactPage.intro' | t }}</p>
+  </header>
+
+  <section class="contact-layout">
+    <article class="glass-card form-card">
+      <h2>{{ 'contactPage.sendMessage' | t }}</h2>
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <label>{{ 'contactPage.fullName' | t }}<input type="text" formControlName="fullName" /></label>
+        <label>{{ 'contactPage.email' | t }}<input type="email" formControlName="email" /></label>
+        <label>{{ 'contactPage.phone' | t }}<input type="tel" formControlName="phone" /></label>
+        <label>{{ 'contactPage.subject' | t }}<input type="text" formControlName="subject" /></label>
+        <label>{{ 'contactPage.message' | t }}<textarea rows="5" formControlName="message"></textarea></label>
+
+        <p class="error" *ngIf="form.invalid && (form.touched || form.dirty)">{{ 'contactPage.formError' | t }}</p>
+
+        <button type="submit" [disabled]="submitting">
+          {{ submitting ? ('contactPage.sending' | t) : ('contactPage.sendButton' | t) }}
+        </button>
+      </form>
+    </article>
+
+    <aside class="glass-card touch-card">
+      <h2>{{ 'contactPage.getInTouch' | t }}</h2>
+      <ul>
+        <li><strong>{{ 'contactPage.address' | t }}:</strong> {{ contact.location }}</li>
+        <li><strong>{{ 'contactPage.phoneLabel' | t }}:</strong> {{ contact.phone }}</li>
+        <li><strong>{{ 'contactPage.whatsappLabel' | t }}:</strong> {{ contact.whatsappDisplay }}</li>
+        <li><strong>{{ 'contactPage.emailLabel' | t }}:</strong> {{ contact.email }}</li>
+      </ul>
+      <div class="hours">
+        <h3>{{ 'contactPage.businessHours' | t }}</h3>
+        <p *ngFor="let line of contact.hoursLines">{{ line }}</p>
+      </div>
+      <button type="button" class="wa" (click)="openWhatsApp()">{{ 'contactPage.whatsappUs' | t }}</button>
+    </aside>
+  </section>
+
+  <section class="glass-card location-wrap">
+    <h2>{{ 'contactPage.locationTitle' | t }}</h2>
+    <p>{{ contact.mapsQuery }}</p>
+    <p class="muted">{{ 'contactPage.locationTagline' | t }}</p>
+    <button type="button" class="btn-primary" (click)="openLocation()">{{ 'contactPage.openLocation' | t }}</button>
+  </section>
+</section>

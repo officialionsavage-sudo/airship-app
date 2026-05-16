@@ -1,0 +1,35 @@
+<header class="nav glass-card">
+  <a class="brand" routerLink="/">
+    <img src="assets/images/horizontal-logo.png" alt="AirShip logo" />
+  </a>
+  <nav [class.open]="menuOpen" [attr.aria-hidden]="!menuOpen">
+    <a
+      *ngFor="let link of links; trackBy: trackByIndex"
+      [routerLink]="link.path"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: link.path === '/' }"
+      (click)="closeMenu()"
+      >{{ link.labelKey | t }}</a
+    >
+    <div class="nav-lang-drawer">
+      <app-language-switcher presentation="drawer" (afterPick)="closeMenu()" />
+    </div>
+  </nav>
+  <div class="nav-trailing">
+    <app-language-switcher class="nav-lang-desktop" presentation="dropdown" />
+    <button
+      class="menu-toggle"
+      type="button"
+      (click)="menuOpen = !menuOpen"
+      [attr.aria-expanded]="menuOpen"
+      [attr.aria-label]="(menuOpen ? 'nav.close' : 'nav.menu') | t"
+    >
+      <span class="menu-label">{{ (menuOpen ? 'nav.close' : 'nav.menu') | t }}</span>
+      <span class="menu-icon" [class.open]="menuOpen" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+      </span>
+    </button>
+  </div>
+</header>

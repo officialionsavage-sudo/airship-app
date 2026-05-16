@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.angular/
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+
+# Local DB dump (large; use docker + seed instead)
+airship-data-only.sql
+*.sql.gz
+
+# Uploaded media (dev)
+AirShipBackend/uploads/
+
+# OS & editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*.swo
+
+# Logs & coverage
+*.log
+npm-debug.log*
+coverage/
+.nyc_output/
+
+# Prisma
+AirShipBackend/prisma/*.db
+AirShipBackend/prisma/*.db-journal

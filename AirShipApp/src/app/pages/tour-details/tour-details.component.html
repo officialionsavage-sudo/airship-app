@@ -1,0 +1,137 @@
+<section class="tour-page" *ngIf="!loading && tour && city">
+  <section class="gallery glass-card reveal">
+    <img class="main-image" [src]="selectedImage" [alt]="tour.title" />
+    <div class="thumbs">
+      <button
+        type="button"
+        class="thumb"
+        *ngFor="let image of tour.images; let i = index"
+        [class.active]="selectedImageIndex === i"
+        (click)="selectImage(i)"
+      >
+        <img [src]="image" [alt]="tour.title + ' image ' + (i + 1)" />
+      </button>
+    </div>
+  </section>
+
+  <section class="content-grid">
+    <article class="details glass-card reveal">
+      <header class="hero-row">
+        <h1>{{ tour.title }}</h1>
+        <span class="discount-badge" *ngIf="anyDiscount">Special Deal</span>
+      </header>
+      <p class="rating">★ {{ tour.rating }} / 5</p>
+
+      <div class="meta-row">
+        <span>{{ tour.duration }}</span>
+        <span>{{ tour.departureTime }}</span>
+        <span>{{ tour.groupSize }}</span>
+      </div>
+
+      <p>{{ tour.overview }}</p>
+
+      <section class="block">
+        <h3>Features</h3>
+        <div class="feature-tags">
+          <span>{{ tour.type | titlecase }}</span>
+          <span>Flexible support</span>
+          <span>Premium guide</span>
+        </div>
+      </section>
+
+      <section class="block">
+        <h3>Itinerary Timeline</h3>
+        <ol class="timeline">
+          <li *ngFor="let step of tour.itinerary; let i = index" [style.animation-delay.ms]="i * 120">
+            <span class="dot"></span>
+            <div>{{ step }}</div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="split-list">
+        <article>
+          <h3>What's Included</h3>
+          <ul>
+            <li *ngFor="let item of tour.included">{{ item }}</li>
+          </ul>
+        </article>
+        <article>
+          <h3>Not Included</h3>
+          <ul>
+            <li *ngFor="let item of tour.notIncluded">{{ item }}</li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="pricing">
+        <div class="pricing-panel pricing-panel--light">
+          <h3>{{ 'unit.pricingDetails' | t }}</h3>
+          <div class="pricing-showcase" role="list">
+            <article
+              class="price-tile"
+              [class.price-tile--deal]="showDiscountBadge(adultPrice)"
+              [class.price-tile--free]="adultPrice?.discountPercent === 100"
+              style="--tile-i: 0"
+              role="listitem"
+            >
+              <div class="price-tile__aurora" aria-hidden="true"></div>
+              <div class="price-tile__inner">
+                <span class="price-tile__badge" *ngIf="showDiscountBadge(adultPrice)">-{{ adultPrice?.discountPercent }}%</span>
+                <h4 class="price-tile__label">Adult</h4>
+                <p class="price-tile__was" *ngIf="showDiscountBadge(adultPrice)">{{ 'common.egp' | t }} {{ adultPrice?.amount | number }}</p>
+                <p class="price-tile__now">{{ labelForPrice(adultPrice) }}</p>
+              </div>
+            </article>
+            <article
+              class="price-tile"
+              [class.price-tile--deal]="showDiscountBadge(childPrice)"
+              [class.price-tile--free]="childPrice?.discountPercent === 100"
+              style="--tile-i: 1"
+              role="listitem"
+            >
+              <div class="price-tile__aurora" aria-hidden="true"></div>
+              <div class="price-tile__inner">
+                <span class="price-tile__badge" *ngIf="showDiscountBadge(childPrice)">-{{ childPrice?.discountPercent }}%</span>
+                <h4 class="price-tile__label">Child (3-12)</h4>
+                <p class="price-tile__was" *ngIf="showDiscountBadge(childPrice)">{{ 'common.egp' | t }} {{ childPrice?.amount | number }}</p>
+                <p class="price-tile__now">{{ labelForPrice(childPrice) }}</p>
+              </div>
+            </article>
+            <article
+              class="price-tile"
+              [class.price-tile--deal]="showDiscountBadge(infantPrice)"
+              [class.price-tile--free]="infantPrice?.discountPercent === 100"
+              style="--tile-i: 2"
+              role="listitem"
+            >
+              <div class="price-tile__aurora" aria-hidden="true"></div>
+              <div class="price-tile__inner">
+                <span class="price-tile__badge" *ngIf="showDiscountBadge(infantPrice)">-{{ infantPrice?.discountPercent }}%</span>
+                <h4 class="price-tile__label">Infant (0-2)</h4>
+                <p class="price-tile__was" *ngIf="showDiscountBadge(infantPrice)">{{ 'common.egp' | t }} {{ infantPrice?.amount | number }}</p>
+                <p class="price-tile__now">{{ labelForPrice(infantPrice) }}</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+    </article>
+
+    <aside class="booking glass-card reveal">
+      <h2>Book This Tour</h2>
+      <form [formGroup]="form" (ngSubmit)="submitBooking()">
+        <label>Select date<input type="date" formControlName="date" /></label>
+        <label>Adults number<input type="number" formControlName="adults" min="1" /></label>
+        <label>Children number<input type="number" formControlName="children" min="0" /></label>
+        <p class="total">
+          Total: EGP {{ totalPrice | number }}</p>
+        <p class="error" *ngIf="form.invalid && (form.touched || form.dirty)">Please select a date before booking.</p>
+        <div class="actions">
+          <button type="submit" [disabled]="submitting">{{ submitting ? 'Booking...' : 'Book Now' }}</button>
+          <button type="button" class="wa" (click)="openWhatsApp()">WhatsApp Us</button>
+        </div>
+      </form>
+    </aside>
+  </section>
+</section>

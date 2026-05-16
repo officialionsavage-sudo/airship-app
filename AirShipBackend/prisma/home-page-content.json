@@ -1,0 +1,78 @@
+{
+  "hero": {
+    "kicker": "AirShip · Red Sea",
+    "titlePrefix": "Plan stay. Book tour.",
+    "typingPhrases": [
+      "Find dream home.",
+      "Book a stay.",
+      "Plan your tour.",
+      "Get instant support."
+    ],
+    "typingAriaLabel": "Find your next experience",
+    "subtitle": "Clean listings, curated experiences, and direct support—built for fast decisions.",
+    "heroLogo": {
+      "src": "assets/images/vertical-logo.png",
+      "alt": "AirShip"
+    },
+    "primaryCta": {
+      "label": "Explore cities",
+      "href": "#cities"
+    },
+    "secondaryCta": {
+      "label": "View offers",
+      "routerLink": "/offers",
+      "chip": "Hot"
+    },
+    "scrollIndicatorLabel": "Explore",
+    "scrollIndicatorAriaLabel": "Explore cities"
+  },
+  "citiesSection": {
+    "title": "Explore Our Cities",
+    "description": "Choose from Egypt's top coastal destinations for lifestyle, investment, and adventure."
+  },
+  "about": {
+    "kicker": "About AirShip",
+    "title": "Built for fast decisions—travel, tours, and coastal homes.",
+    "lead": "AirShip is your Red Sea co-pilot. We curate destinations, tours, and real estate opportunities with clean listings, clear pricing, and direct support—so you can decide quickly and confidently.",
+    "points": [
+      {
+        "title": "Curated, not cluttered",
+        "body": "We hand-pick what matters: highlights, inclusions, and the real reasons to choose a place."
+      },
+      {
+        "title": "Local insight, global polish",
+        "body": "Destination guidance that feels premium—without the sales pressure."
+      },
+      {
+        "title": "Direct support",
+        "body": "Questions? You get fast answers—no long forms, no waiting days."
+      }
+    ],
+    "stats": [
+      { "value": "10+", "label": "Coastal cities" },
+      { "value": "30+", "label": "Curated experiences" },
+      { "value": "24/7", "label": "WhatsApp support" }
+    ],
+    "visualCards": [
+      {
+        "badge": "Real estate",
+        "title": "Projects & units",
+        "subtitle": "Starting prices · facilities · delivery dates"
+      },
+      {
+        "badge": "Tours",
+        "title": "Itineraries",
+        "subtitle": "What's included · timing · group sizes"
+      },
+      {
+        "badge": "Cities",
+        "title": "Lifestyle picks",
+        "subtitle": "Curated neighborhoods · vibes · highlights"
+      }
+    ]
+  },
+  "testimonialsSection": {
+    "title": "What Our Customers Say",
+    "description": "Real feedback from travelers and buyers. Quick, clear, and consistent."
+  }
+}

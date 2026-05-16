@@ -1,0 +1,44 @@
+<section class="tours-page page-container">
+  <header class="glass-card page-head">
+    <h1>Tours & Excursions in {{ cityName }}</h1>
+    <p>Choose your perfect Red Sea journey from curated premium experiences.</p>
+  </header>
+
+  <section class="filter-chip-row glass-card" role="region" aria-label="Filter tours by type">
+    <button
+      type="button"
+      class="filter-chip"
+      *ngFor="let opt of filterSelectOptions"
+      [class.filter-chip-active]="selectedFilterSlug === opt.slug"
+      [attr.aria-pressed]="selectedFilterSlug === opt.slug"
+      (click)="selectFilter(opt.slug)"
+    >
+      {{ opt.title }}
+    </button>
+  </section>
+
+  <app-loading-skeleton *ngIf="loading" [count]="pageSize"></app-loading-skeleton>
+
+  <section class="tours-grid" *ngIf="!loading && paginatedTours.length > 0">
+    <a class="tour-card glass-card" *ngFor="let tour of paginatedTours; trackBy: trackBySlug; let i = index" [style.animation-delay.ms]="i * 90" [routerLink]="['/city', citySlug, 'tours', tour.slug]">
+      <div class="media">
+        <img [src]="tour.images[0]" [alt]="tour.title" />
+        <span class="duration">{{ tour.duration }}</span>
+      </div>
+      <div class="body">
+        <h3>{{ tour.title }}</h3>
+        <p class="meta">★ {{ tour.rating }} · {{ displayTourType(tour) }}</p>
+        <p class="price">Start from EGP {{ tour.startPrice | number }}</p>
+        <span class="card-cta">View Details</span>
+      </div>
+    </a>
+  </section>
+
+  <div *ngIf="!loading && errorMessage" class="error-wrap">
+    <app-empty-state title="Error loading tours" [subtitle]="errorMessage"></app-empty-state>
+    <button class="btn-primary" type="button" (click)="retryLoad()">Retry</button>
+  </div>
+  <app-empty-state *ngIf="!loading && !errorMessage && paginatedTours.length === 0" title="No tours found" subtitle="Try another filter type."></app-empty-state>
+
+  <app-pagination *ngIf="!loading && totalPages > 1" [pages]="pageNumbers" [currentPage]="currentPage" (pageChange)="goToPage($event)"></app-pagination>
+</section>
