@@ -18,6 +18,7 @@
     "db:seed": "prisma db seed",
     "db:seed:bulk": "tsx prisma/seed-bulk-fake.ts",
     "db:seed:resume": "tsx prisma/seed-resume.ts",
+    "db:wipe": "bash scripts/wipe-database.sh",
     "db:seed:cars": "tsx prisma/seed-cars.ts",
     "db:studio": "prisma studio"
   },
