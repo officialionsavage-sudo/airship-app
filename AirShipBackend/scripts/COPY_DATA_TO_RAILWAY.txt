@@ -41,7 +41,7 @@ Step E — Check API
 ------------------
 Open in browser or curl:
 
-  https://airship-production.up.railway.app/api/cities
+  https://airship-app-production.up.railway.app/api/cities
 
 You should see your imported rows.
 

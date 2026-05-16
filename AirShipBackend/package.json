@@ -16,6 +16,8 @@
     "db:down": "docker compose -f ../docker-compose.yml down",
     "db:logs": "docker compose -f ../docker-compose.yml logs -f postgres",
     "db:seed": "prisma db seed",
+    "db:seed:bulk": "tsx prisma/seed-bulk-fake.ts",
+    "db:seed:resume": "tsx prisma/seed-resume.ts",
     "db:seed:cars": "tsx prisma/seed-cars.ts",
     "db:studio": "prisma studio"
   },

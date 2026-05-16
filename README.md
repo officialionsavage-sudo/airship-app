@@ -167,7 +167,7 @@ To see where time goes: watch Railway logs for **`[slow http]`** (warns when a r
 ### Frontend + API
 
 - Dev builds use [`AirShipApp/src/environments/environment.ts`](AirShipApp/src/environments/environment.ts) with **`apiBaseUrl: ''`** so the browser calls **`/api/…`** on the dev-server origin and [`proxy.conf.json`](AirShipApp/proxy.conf.json) forwards to **`http://localhost:3000`** (avoids huge hosted responses during `ng serve`).
-- Production builds replace with [`environment.prod.ts`](AirShipApp/src/environments/environment.prod.ts) (`apiBaseUrl` → Railway API origin `https://airship-production.up.railway.app`, or change when your API URL changes).
+- Production builds replace with [`environment.prod.ts`](AirShipApp/src/environments/environment.prod.ts) (`apiBaseUrl` → Railway API origin `https://airship-app-production.up.railway.app`, or change when your API URL changes).
 - Each Angular app wires **`proxy.conf.json`** for **`ng serve`** / **`npm start`** so **`apiBaseUrl: ''`** still reaches the API on port **3000** during local development.
 
 ### Deploy AirShipApp (Vercel)
