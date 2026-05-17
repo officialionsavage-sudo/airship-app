@@ -3,7 +3,9 @@ import { Component, DestroyRef, HostListener, Inject, OnDestroy, OnInit, PLATFOR
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import { AdminAuthService } from '../core/admin-auth.service';
+import { HttpClient } from '@angular/common/http';
+import { AdminAuthService, type AdminRole } from '../core/admin-auth.service';
+import { apiUrl } from '../core/api-url';
 import { AdminConfirmHostComponent } from '../shared/admin-confirm/admin-confirm-host.component';
 import { AdminNoticeBannerComponent } from '../shared/admin-notice/admin-notice-banner.component';
 
@@ -20,6 +22,8 @@ export type AdminNavGroup = {
 };
 
 export type AdminNavEntry = AdminNavLink | AdminNavGroup;
+
+type AdminSession = { role: AdminRole; username: string; canWrite: boolean };
 
 @Component({
   selector: 'app-admin-shell',
@@ -38,6 +42,7 @@ export type AdminNavEntry = AdminNavLink | AdminNavGroup;
 })
 export class AdminShellComponent implements OnInit, OnDestroy {
   private readonly destroyRef = inject(DestroyRef);
+  private readonly http = inject(HttpClient);
 
   readonly nav: AdminNavEntry[] = [
     { kind: 'link', label: 'Dashboard', path: '/dashboard' },
@@ -95,6 +100,7 @@ export class AdminShellComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.refreshSessionRole();
     this.syncExpandedGroupsFromUrl(this.router.url);
     this.router.events
       .pipe(
@@ -192,5 +198,21 @@ export class AdminShellComponent implements OnInit, OnDestroy {
   logout(): void {
     this.auth.logout();
     void this.router.navigateByUrl('/login');
+  }
+
+  private refreshSessionRole(): void {
+    if (!this.auth.credentials()) {
+      return;
+    }
+    this.http
+      .get<AdminSession>(apiUrl('/api/admin/session'))
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (session) => this.auth.applyRole(session.role),
+        error: () => {
+          this.auth.logout();
+          void this.router.navigateByUrl('/login');
+        },
+      });
   }
 }

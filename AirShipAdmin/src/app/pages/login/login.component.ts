@@ -3,8 +3,10 @@ import { HttpClient } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AdminAuthService } from '../../core/admin-auth.service';
+import { AdminAuthService, type AdminRole } from '../../core/admin-auth.service';
 import { apiUrl } from '../../core/api-url';
+
+type AdminSession = { role: AdminRole; username: string; canWrite: boolean };
 
 @Component({
   selector: 'app-login',
@@ -15,8 +17,7 @@ import { apiUrl } from '../../core/api-url';
       <form class="card" (ngSubmit)="submit()">
         <h1>AirShip Admin</h1>
         <p class="muted">
-          Sign in with <strong>ADMIN_USERNAME</strong> and <strong>ADMIN_PASSWORD</strong> from your server
-          <code>.env</code>. Wrong credentials are rejected by the API.
+          Sign in with your admin or read-only account. Full access uses the server admin credentials; read-only users can browse but cannot save changes.
         </p>
         <label class="field">
           <span>Username</span>
@@ -130,17 +131,16 @@ export class LoginComponent {
       return;
     }
     this.checking = true;
-    this.auth.setCredentials(username, password);
-    this.http
-      .get(apiUrl('/api/admin/site-content'), { params: { page: '1', pageSize: '1' } })
-      .subscribe({
-        next: () => {
-          this.checking = false;
-          void this.router.navigateByUrl('/dashboard');
-        },
-        error: (err: { status?: number }) => {
-          this.checking = false;
-          this.auth.logout();
+    this.auth.setSession(username, password, 'admin');
+    this.http.get<AdminSession>(apiUrl('/api/admin/session')).subscribe({
+      next: (session) => {
+        this.checking = false;
+        this.auth.setSession(username, password, session.role);
+        void this.router.navigateByUrl('/dashboard');
+      },
+      error: (err: { status?: number }) => {
+        this.checking = false;
+        this.auth.logout();
           if (err.status === 401) {
             this.error = 'Wrong username or password.';
           } else if (err.status === 503) {

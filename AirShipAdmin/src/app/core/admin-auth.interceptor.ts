@@ -1,5 +1,7 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { catchError, throwError } from 'rxjs';
+import { AdminNoticeService } from '../shared/admin-notice/admin-notice.service';
 import { AdminAuthService } from './admin-auth.service';
 
 /** Match admin routes whether HttpClient used a relative path or a full origin URL. */
@@ -28,10 +30,19 @@ function basicAuthHeader(username: string, password: string): string {
 
 export const adminAuthInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AdminAuthService);
+  const notice = inject(AdminNoticeService);
   const c = auth.credentials();
-  if (c && isAdminApiUrl(req.url)) {
-    const token = basicAuthHeader(c.username, c.password);
-    return next(req.clone({ setHeaders: { Authorization: `Basic ${token}` } }));
-  }
-  return next(req);
+  const cloned =
+    c && isAdminApiUrl(req.url)
+      ? req.clone({ setHeaders: { Authorization: `Basic ${basicAuthHeader(c.username, c.password)}` } })
+      : req;
+
+  return next(cloned).pipe(
+    catchError((err: unknown) => {
+      if (err instanceof HttpErrorResponse && err.status === 403 && isAdminApiUrl(req.url)) {
+        notice.error('Read-only account: you cannot change data.');
+      }
+      return throwError(() => err);
+    }),
+  );
 };

@@ -23,6 +23,33 @@
   margin-left: 1.25rem;
 }
 
+.readonly-banner {
+  flex-shrink: 0;
+  margin: 0 0 0.75rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  background: rgba(14, 165, 233, 0.12);
+  color: var(--admin-text);
+  font-size: 0.88rem;
+}
+
+.shell--readonly .main-scroll {
+  input:not([type='checkbox']):not([type='radio']),
+  textarea,
+  select {
+    pointer-events: none;
+    opacity: 0.72;
+  }
+
+  .btn-primary,
+  .btn-danger,
+  .admin-toolbar .btn:not(.menu-toggle) {
+    pointer-events: none;
+    opacity: 0.45;
+  }
+}
+
 .main-toolbar {
   flex-shrink: 0;
   margin: -0.35rem 0 0.85rem;

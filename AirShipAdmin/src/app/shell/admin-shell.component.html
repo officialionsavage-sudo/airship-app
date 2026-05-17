@@ -1,4 +1,4 @@
-<div class="shell" [class.menu-collapsed]="menuCollapsed">
+<div class="shell" [class.menu-collapsed]="menuCollapsed" [class.shell--readonly]="auth.isReadOnly()">
   <button
     *ngIf="isMobileLayout && !menuCollapsed"
     type="button"
@@ -58,6 +58,9 @@
       </button>
     </div>
     <app-admin-notice-banner />
+    <p *ngIf="auth.isReadOnly()" class="readonly-banner" role="status">
+      Read-only mode — you can view everything but cannot save, create, or delete.
+    </p>
     <div class="main-scroll">
       <router-outlet />
     </div>

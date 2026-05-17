@@ -8,6 +8,7 @@ import type { AdminPaginated } from '../../core/admin-paginated';
 import { apiUrl } from '../../core/api-url';
 import { AdminConfirmService } from '../../shared/admin-confirm/admin-confirm.service';
 import { AdminNoticeService } from '../../shared/admin-notice/admin-notice.service';
+import { AdminAuthService } from '../../core/admin-auth.service';
 import { AdminFieldHintComponent } from '../../shared/admin-field-hint/admin-field-hint.component';
 import { CONTACT_SETTING_FIELDS } from './site-contact-settings.fields';
 
@@ -43,7 +44,7 @@ type SettingRow = { key: string; value: string; updatedAt: string };
       </div>
 
       <div class="form-actions">
-        <button type="submit" class="btn btn-primary" [disabled]="saving">
+        <button type="submit" class="btn btn-primary" [disabled]="saving || !auth.canWrite()">
           {{ saving ? 'Saving…' : 'Save changes' }}
         </button>
       </div>
@@ -98,6 +99,7 @@ export class SiteSettingsComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly confirm = inject(AdminConfirmService);
   private readonly notice = inject(AdminNoticeService);
+  readonly auth = inject(AdminAuthService);
 
   readonly fields = CONTACT_SETTING_FIELDS;
   values: Record<string, string> = {};
@@ -142,6 +144,10 @@ export class SiteSettingsComponent implements OnInit {
   }
 
   private async saveAsync(): Promise<void> {
+    if (!this.auth.canWrite()) {
+      this.notice.error('Read-only account: you cannot change settings.');
+      return;
+    }
     this.fieldErrors = {};
     this.formError = '';
 
