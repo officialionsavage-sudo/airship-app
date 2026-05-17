@@ -12,6 +12,9 @@ import type { HomePageContent } from '@airship-public/home-page.models';
 import { CMS_LOCALES, type CmsLocale } from '@airship-public/home-page.models';
 import { adminApiErrorMessage } from '../../core/admin-messages';
 import { apiUrl } from '../../core/api-url';
+import { AdminAuthService } from '../../core/admin-auth.service';
+import { requireWriteAccess } from '../../core/admin-write-access';
+import { AdminNoticeService } from '../../shared/admin-notice/admin-notice.service';
 import { HomeContentFormComponent } from '../../cms/home-content-form.component';
 import { HelpPanelComponent } from '../../shared/help-panel/help-panel.component';
 import { HomeCmsMirrorComponent } from '../../shared/home-cms-mirror/home-cms-mirror.component';
@@ -74,7 +77,7 @@ import { AdminConfirmService } from '../../shared/admin-confirm/admin-confirm.se
         </ng-container>
 
         <p class="parse-err" *ngIf="key === 'home' && parseError">{{ parseError }}</p>
-        <div class="actions" *ngIf="key === 'home'">
+        <div class="actions" *ngIf="key === 'home' && auth.canWrite()">
           <button type="button" class="btn" (click)="resetUnsaved()" [disabled]="saving || !hasUnsavedChanges">
             Discard unsaved changes
           </button>
@@ -84,11 +87,17 @@ import { AdminConfirmService } from '../../shared/admin-confirm/admin-confirm.se
           <span class="ok" *ngIf="savedMsg">{{ savedMsg }}</span>
           <span class="err" *ngIf="saveError">{{ saveError }}</span>
         </div>
+        <p *ngIf="key === 'home' && auth.isReadOnly()" class="readonly-note">Read-only: home page text cannot be changed with this account.</p>
       </div>
     </div>
   `,
   styles: [
     `
+      .readonly-note {
+        margin-top: 0.75rem;
+        color: var(--admin-muted);
+        font-size: 0.9rem;
+      }
       .locale-bar {
         margin-bottom: 0.75rem;
       }
@@ -171,7 +180,9 @@ import { AdminConfirmService } from '../../shared/admin-confirm/admin-confirm.se
   ],
 })
 export class SiteContentEditComponent implements OnInit {
+  readonly auth = inject(AdminAuthService);
   private readonly confirm = inject(AdminConfirmService);
+  private readonly notice = inject(AdminNoticeService);
 
   readonly cmsLocales = [...CMS_LOCALES];
 
@@ -314,6 +325,9 @@ export class SiteContentEditComponent implements OnInit {
   }
 
   private async saveAsync(): Promise<void> {
+    if (!requireWriteAccess(this.auth, this.notice)) {
+      return;
+    }
     if (this.key !== 'home' || !this.homeBundled || !this.homeDraft) {
       return;
     }

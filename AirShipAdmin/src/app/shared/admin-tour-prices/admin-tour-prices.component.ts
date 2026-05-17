@@ -1,5 +1,6 @@
 import { NgFor, NgIf } from '@angular/common';
-import { Component, Input, forwardRef } from '@angular/core';
+import { Component, Input, forwardRef, inject } from '@angular/core';
+import { AdminAuthService } from '../../core/admin-auth.service';
 import { AdminFieldHintComponent } from '../admin-field-hint/admin-field-hint.component';
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
 
@@ -31,11 +32,19 @@ export type TourPriceRow = { label: string; amount: number; discountPercent: num
           [disabled]="disabled"
           (ngModelChange)="emit()"
         />
-        <button type="button" class="btn btn-small danger" [disabled]="disabled" (click)="remove(i)">
+        <button
+          *ngIf="auth.canWrite()"
+          type="button"
+          class="btn btn-small danger"
+          [disabled]="disabled"
+          (click)="remove(i)"
+        >
           Remove
         </button>
       </div>
-      <button type="button" class="btn btn-small" [disabled]="disabled" (click)="add()">Add price</button>
+      <button *ngIf="auth.canWrite()" type="button" class="btn btn-small" [disabled]="disabled" (click)="add()">
+        Add price
+      </button>
     </div>
   `,
   styles: [
@@ -110,6 +119,7 @@ export type TourPriceRow = { label: string; amount: number; discountPercent: num
   ],
 })
 export class AdminTourPricesComponent implements ControlValueAccessor {
+  readonly auth = inject(AdminAuthService);
   @Input() fieldHint = '';
   rows: TourPriceRow[] = [];
   disabled = false;

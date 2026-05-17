@@ -43,11 +43,12 @@ type SettingRow = { key: string; value: string; updatedAt: string };
         <p class="field-err" *ngIf="fieldErrors[field.key]">{{ fieldErrors[field.key] }}</p>
       </div>
 
-      <div class="form-actions">
-        <button type="submit" class="btn btn-primary" [disabled]="saving || !auth.canWrite()">
+      <div class="form-actions" *ngIf="auth.canWrite()">
+        <button type="submit" class="btn btn-primary" [disabled]="saving">
           {{ saving ? 'Saving…' : 'Save changes' }}
         </button>
       </div>
+      <p *ngIf="auth.isReadOnly()" class="readonly-note">Read-only: contact details cannot be changed with this account.</p>
       <p class="form-err" *ngIf="formError">{{ formError }}</p>
     </form>
   `,
@@ -91,6 +92,11 @@ type SettingRow = { key: string; value: string; updatedAt: string };
       }
       .form-actions {
         margin-top: 0.5rem;
+      }
+      .readonly-note {
+        margin: 0.5rem 0 0;
+        color: var(--admin-muted);
+        font-size: 0.9rem;
       }
     `,
   ],

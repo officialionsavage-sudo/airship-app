@@ -4,6 +4,7 @@ import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/f
 import { adminApiErrorMessage } from '../../core/admin-messages';
 import { resolveAdminImagePreviewSrc, truncateAdminImageUrl } from '../../core/admin-image-preview';
 import { AdminMediaUploadService } from '../../core/admin-media-upload.service';
+import { AdminAuthService } from '../../core/admin-auth.service';
 import { AdminFieldHintComponent } from '../admin-field-hint/admin-field-hint.component';
 
 /** Default max upload size for admin image fields (2 MB). */
@@ -26,7 +27,7 @@ export const ADMIN_GALLERY_MAX_IMAGES = 10;
         Upload an image (max {{ maxKb }} KB). It is saved on your API server and stored as a URL in the database.
       </p>
 
-      <div class="row-top">
+      <div class="row-top" *ngIf="auth.canWrite()">
         <button
           type="button"
           class="btn btn-small"
@@ -63,7 +64,7 @@ export const ADMIN_GALLERY_MAX_IMAGES = 10;
       <p class="url-line" *ngIf="value">{{ displayUrl }}</p>
       <p class="warn" *ngIf="previewFailed && value">Preview unavailable — URL is stored; save to confirm.</p>
 
-      <div class="manual" *ngIf="showManual">
+      <div class="manual" *ngIf="showManual && auth.canWrite()">
         <textarea
           [(ngModel)]="manualDraft"
           [disabled]="disabled"
@@ -188,6 +189,7 @@ export const ADMIN_GALLERY_MAX_IMAGES = 10;
   ],
 })
 export class AdminImageFieldComponent implements ControlValueAccessor {
+  readonly auth = inject(AdminAuthService);
   private readonly uploads = inject(AdminMediaUploadService);
 
   @Input() label = 'Image';

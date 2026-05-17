@@ -1,14 +1,10 @@
 export const environment = {
-  production: false,
+  production: true,
+  /** Public Express API (Railway). No trailing slash — services append `/api`. */
+  apiBaseUrl: 'https://airship-app-production.up.railway.app',
   /**
-   * Empty string = browser calls `/api/...` on the dev-server origin; `proxy.conf.json` forwards to
-   * `http://localhost:3000`. Much faster than pulling multi‑MB JSON from a hosted API during `ng serve`.
-   * Production builds replace this file with `environment.prod.ts` (absolute API URL for deployed SSR).
-   */
-  apiBaseUrl: '',
-  /**
-   * `provideClientHydration()` only when you actually serve SSR HTML from Node (`serve:ssr`).
-   * Static hosting (Vercel, S3) must keep this **false** or bootstrap can hang behind the boot overlay.
+   * Keep **false** for Vercel / static `browser/` deploys. Set **true** only if you run Angular SSR
+   * (`npm run serve:ssr`) behind Node so serialized HTML matches the client bundle.
    */
   clientHydration: false,
 };

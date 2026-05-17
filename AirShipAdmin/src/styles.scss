@@ -280,3 +280,58 @@ select {
   visibility: visible;
   opacity: 1;
 }
+
+/** Spectator (read-only) — hide mutate controls; keep view/navigation buttons (.btn-view, .btn-sm). */
+.shell--readonly .main-scroll {
+  .admin-toolbar,
+  .admin-modal-actions,
+  .form-actions,
+  .row-add,
+  .slot-actions,
+  .admin-image-field .row-top,
+  .admin-image-field .manual,
+  .string-list-actions,
+  .tour-prices-actions {
+    display: none !important;
+  }
+
+  .btn-primary,
+  .btn-danger,
+  .btn-small.btn-danger,
+  .btn-small.danger,
+  .danger.btn-small,
+  .btn-danger.btn-tiny {
+    display: none !important;
+  }
+
+  .admin-table th.admin-col-actions,
+  .admin-table td.admin-col-actions,
+  .admin-cards .admin-mutate {
+    display: none !important;
+  }
+
+  .admin-table button.btn:not(.btn-view):not(.btn-sm),
+  .admin-table button.btn-small:not(.btn-view),
+  .admin-card > button.btn:not(.btn-view),
+  .admin-card button.btn-small:not(.btn-view) {
+    display: none !important;
+  }
+
+  input:not([type='checkbox']):not([type='radio']),
+  textarea,
+  select {
+    pointer-events: none;
+    opacity: 0.85;
+    cursor: default;
+  }
+
+  a.btn-small:not(.btn-view) {
+    display: none !important;
+  }
+
+  .repeat-head button,
+  .repeat-block + button.btn,
+  button.btn-tiny {
+    display: none !important;
+  }
+}

@@ -7,6 +7,8 @@ import { finalize } from 'rxjs';
 import { ADMIN_MSG, adminApiErrorMessage } from '../../core/admin-messages';
 import type { AdminPaginated } from '../../core/admin-paginated';
 import { apiUrl } from '../../core/api-url';
+import { AdminAuthService } from '../../core/admin-auth.service';
+import { requireWriteAccess } from '../../core/admin-write-access';
 import { AdminConfirmService } from '../../shared/admin-confirm/admin-confirm.service';
 import { AdminNoticeService } from '../../shared/admin-notice/admin-notice.service';
 import { AdminImageFieldComponent } from '../../shared/admin-image-field/admin-image-field.component';
@@ -70,7 +72,7 @@ type ProjList = {
               <th scope="col">Project name</th>
               <th scope="col">City</th>
               <th scope="col">Units</th>
-              <th scope="col">Actions</th>
+              <th scope="col" class="admin-col-actions">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -81,8 +83,8 @@ type ProjList = {
               <td>{{ p._count.units }}</td>
               <td class="row-actions">
                 <a class="btn btn-small" [routerLink]="['/catalog/projects', p.id]">Open details</a>
-                <button type="button" class="btn btn-small" (click)="openEditProject(p.id)">Edit</button>
-                <button type="button" class="btn btn-small btn-danger" (click)="deleteProject(p)">Delete</button>
+                <button type="button" class="btn btn-small admin-mutate" (click)="openEditProject(p.id)">Edit</button>
+                <button type="button" class="btn btn-small btn-danger admin-mutate" (click)="deleteProject(p)">Delete</button>
               </td>
             </tr>
           </tbody>
@@ -94,8 +96,8 @@ type ProjList = {
           <div>Link: <code>{{ p.slug }}</code> · City: {{ p.city.slug }} · {{ p._count.units }} units</div>
           <div class="card-actions">
             <a class="btn btn-small" [routerLink]="['/catalog/projects', p.id]">Open details</a>
-            <button type="button" class="btn btn-small" (click)="openEditProject(p.id)">Edit</button>
-            <button type="button" class="btn btn-small btn-danger" (click)="deleteProject(p)">Delete</button>
+            <button type="button" class="btn btn-small admin-mutate" (click)="openEditProject(p.id)">Edit</button>
+            <button type="button" class="btn btn-small btn-danger admin-mutate" (click)="deleteProject(p)">Delete</button>
           </div>
         </div>
       </div>
@@ -327,6 +329,7 @@ type ProjList = {
 })
 export class ProjectsPageComponent implements OnInit {
   private readonly http = inject(HttpClient);
+  private readonly auth = inject(AdminAuthService);
   private readonly confirm = inject(AdminConfirmService);
   private readonly notice = inject(AdminNoticeService);
 
@@ -479,6 +482,9 @@ export class ProjectsPageComponent implements OnInit {
   }
 
   openNewProject(): void {
+    if (!requireWriteAccess(this.auth, this.notice)) {
+      return;
+    }
     this.editingProjectId = null;
     this.pf = this.emptyProjectForm();
     this.error = '';
@@ -489,6 +495,9 @@ export class ProjectsPageComponent implements OnInit {
   }
 
   openEditProject(id: string): void {
+    if (!requireWriteAccess(this.auth, this.notice)) {
+      return;
+    }
     this.error = '';
     this.filterOptionsError = '';
     this.http.get<any>(apiUrl(`/api/admin/projects/${id}`)).subscribe({
@@ -550,6 +559,9 @@ export class ProjectsPageComponent implements OnInit {
   }
 
   private async saveProjectAsync(): Promise<void> {
+    if (!requireWriteAccess(this.auth, this.notice)) {
+      return;
+    }
     const ok = await this.confirm.open({
       title: this.editingProjectId ? 'Save project?' : 'Create project?',
       message: this.editingProjectId
@@ -610,6 +622,9 @@ export class ProjectsPageComponent implements OnInit {
   }
 
   private async deleteProjectAsync(p: ProjList): Promise<void> {
+    if (!requireWriteAccess(this.auth, this.notice)) {
+      return;
+    }
     const ok = await this.confirm.open({
       title: 'Delete this project?',
       message: `"${p.title}" and all ${p._count.units} unit(s) will be permanently removed. This cannot be undone.`,

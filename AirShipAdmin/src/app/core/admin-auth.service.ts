@@ -50,6 +50,16 @@ export class AdminAuthService {
     }
   }
 
+  /** Store username/password for the next API call; role is set after GET /api/admin/session. */
+  setCredentialsForLogin(username: string, password: string): void {
+    const u = username.trim();
+    const p = password.trim();
+    sessionStorage.setItem(STORAGE_USERNAME, u);
+    sessionStorage.setItem(STORAGE_PASSWORD, p);
+    sessionStorage.removeItem(LEGACY_STORAGE_KEY);
+    this.credentials.set({ username: u, password: p });
+  }
+
   setSession(username: string, password: string, role: AdminRole): void {
     const u = username.trim();
     const p = password.trim();

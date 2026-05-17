@@ -131,7 +131,7 @@ export class LoginComponent {
       return;
     }
     this.checking = true;
-    this.auth.setSession(username, password, 'admin');
+    this.auth.setCredentialsForLogin(username, password);
     this.http.get<AdminSession>(apiUrl('/api/admin/session')).subscribe({
       next: (session) => {
         this.checking = false;

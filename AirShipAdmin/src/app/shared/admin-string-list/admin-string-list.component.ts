@@ -1,5 +1,6 @@
 import { NgFor, NgIf } from '@angular/common';
-import { Component, Input, forwardRef } from '@angular/core';
+import { Component, Input, forwardRef, inject } from '@angular/core';
+import { AdminAuthService } from '../../core/admin-auth.service';
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { AdminFieldHintComponent } from '../admin-field-hint/admin-field-hint.component';
 
@@ -21,11 +22,19 @@ import { AdminFieldHintComponent } from '../admin-field-hint/admin-field-hint.co
           [disabled]="disabled"
           (ngModelChange)="onLineChange()"
         />
-        <button type="button" class="btn btn-small danger" [disabled]="disabled" (click)="remove(i)">
+        <button
+          *ngIf="auth.canWrite()"
+          type="button"
+          class="btn btn-small danger"
+          [disabled]="disabled"
+          (click)="remove(i)"
+        >
           Remove
         </button>
       </div>
-      <button type="button" class="btn btn-small" [disabled]="disabled" (click)="add()">Add line</button>
+      <button *ngIf="auth.canWrite()" type="button" class="btn btn-small" [disabled]="disabled" (click)="add()">
+        Add line
+      </button>
     </div>
   `,
   styles: [
@@ -84,6 +93,7 @@ import { AdminFieldHintComponent } from '../admin-field-hint/admin-field-hint.co
   ],
 })
 export class AdminStringListComponent implements ControlValueAccessor {
+  readonly auth = inject(AdminAuthService);
   @Input() label = 'Items';
   @Input() fieldHint = '';
 

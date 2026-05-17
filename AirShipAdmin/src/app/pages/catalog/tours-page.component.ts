@@ -6,6 +6,8 @@ import { RouterLink } from '@angular/router';
 import { ADMIN_MSG, adminApiErrorMessage } from '../../core/admin-messages';
 import type { AdminPaginated } from '../../core/admin-paginated';
 import { apiUrl } from '../../core/api-url';
+import { AdminAuthService } from '../../core/admin-auth.service';
+import { requireWriteAccess } from '../../core/admin-write-access';
 import { AdminConfirmService } from '../../shared/admin-confirm/admin-confirm.service';
 import { AdminNoticeService } from '../../shared/admin-notice/admin-notice.service';
 import { AdminImageJsonArrayComponent } from '../../shared/admin-image-json-array/admin-image-json-array.component';
@@ -65,7 +67,7 @@ type TourList = {
               <th scope="col">Tour name</th>
               <th scope="col">City</th>
               <th scope="col">Category</th>
-              <th scope="col">Actions</th>
+              <th scope="col" class="admin-col-actions">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -74,7 +76,9 @@ type TourList = {
               <td>{{ t.title }}</td>
               <td>{{ t.city.slug }}</td>
               <td>{{ prettyTourType(t.type) }}</td>
-              <td><button type="button" class="btn" (click)="load(t.id)">Edit</button></td>
+              <td class="admin-col-actions">
+                <button type="button" class="btn admin-mutate" (click)="load(t.id)">Edit</button>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -83,7 +87,7 @@ type TourList = {
         <div class="admin-card" *ngFor="let t of tours">
           <strong>{{ t.title }}</strong>
           <div>Link: <code>{{ t.slug }}</code> · {{ t.city.slug }} · {{ prettyTourType(t.type) }}</div>
-          <button type="button" class="btn" (click)="load(t.id)">Edit</button>
+          <button type="button" class="btn admin-mutate" (click)="load(t.id)">Edit</button>
         </div>
       </div>
     </div>
@@ -243,6 +247,7 @@ type TourList = {
 })
 export class ToursPageComponent implements OnInit {
   private readonly http = inject(HttpClient);
+  private readonly auth = inject(AdminAuthService);
   private readonly confirm = inject(AdminConfirmService);
   private readonly notice = inject(AdminNoticeService);
 
@@ -286,6 +291,9 @@ export class ToursPageComponent implements OnInit {
   }
 
   startNew(): void {
+    if (!requireWriteAccess(this.auth, this.notice)) {
+      return;
+    }
     this.isNew = true;
     this.pickedId = null;
     this.f = this.empty();
@@ -396,6 +404,9 @@ export class ToursPageComponent implements OnInit {
   }
 
   load(id: string): void {
+    if (!requireWriteAccess(this.auth, this.notice)) {
+      return;
+    }
     this.error = '';
     this.isNew = false;
     this.http.get<any>(apiUrl(`/api/admin/tours/${id}`)).subscribe({
@@ -457,6 +468,9 @@ export class ToursPageComponent implements OnInit {
   }
 
   private async saveAsync(): Promise<void> {
+    if (!requireWriteAccess(this.auth, this.notice)) {
+      return;
+    }
     if (!this.isNew && !this.pickedId) {
       return;
     }

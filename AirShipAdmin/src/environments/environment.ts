@@ -1,7 +1,7 @@
 export const environment = {
-  production: false,
-  /** Empty → dev-server proxy (`proxy.conf.json` → localhost:3000). Production URL is in `environment.prod.ts`. */
-  apiBaseUrl: '',
-  /** Public Angular app origin for CMS iframe mirror (`Site content → home`). */
+  production: true,
+  /** Public Express API (Railway). No trailing slash — `apiUrl()` appends `/api`. */
+  apiBaseUrl: 'https://airship-app-production.up.railway.app',
+  /** Deployed public SPA origin for iframe preview in CMS; set when the main site has a URL. */
   publicSiteOrigin: '',
 };

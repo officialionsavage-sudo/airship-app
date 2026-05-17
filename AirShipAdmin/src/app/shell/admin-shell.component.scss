@@ -34,22 +34,6 @@
   font-size: 0.88rem;
 }
 
-.shell--readonly .main-scroll {
-  input:not([type='checkbox']):not([type='radio']),
-  textarea,
-  select {
-    pointer-events: none;
-    opacity: 0.72;
-  }
-
-  .btn-primary,
-  .btn-danger,
-  .admin-toolbar .btn:not(.menu-toggle) {
-    pointer-events: none;
-    opacity: 0.45;
-  }
-}
-
 .main-toolbar {
   flex-shrink: 0;
   margin: -0.35rem 0 0.85rem;

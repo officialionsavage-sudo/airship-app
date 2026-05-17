@@ -5,6 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { ADMIN_MSG, adminApiErrorMessage } from '../../core/admin-messages';
 import type { AdminPaginated } from '../../core/admin-paginated';
 import { apiUrl } from '../../core/api-url';
+import { AdminAuthService } from '../../core/admin-auth.service';
+import { requireWriteAccess } from '../../core/admin-write-access';
 import { AdminConfirmService } from '../../shared/admin-confirm/admin-confirm.service';
 import { AdminModalComponent } from '../../shared/admin-modal/admin-modal.component';
 import { AdminNoticeService } from '../../shared/admin-notice/admin-notice.service';
@@ -81,15 +83,20 @@ type ReviewRow = {
               </td>
               <td>{{ row.rating }}/5</td>
               <td>
-                <select [ngModel]="row.status" (ngModelChange)="onStatusChange(row, $event)">
+                <select
+                  *ngIf="auth.canWrite()"
+                  [ngModel]="row.status"
+                  (ngModelChange)="onStatusChange(row, $event)"
+                >
                   <option value="pending">Pending</option>
                   <option value="approved">Approved</option>
                   <option value="rejected">Rejected</option>
                 </select>
+                <span *ngIf="!auth.canWrite()">{{ row.status }}</span>
               </td>
               <td class="clip">{{ row.text }}</td>
               <td>
-                <button type="button" class="btn btn-sm" (click)="openDetail(row)">Read</button>
+                <button type="button" class="btn btn-sm btn-view" (click)="openDetail(row)">Read</button>
               </td>
             </tr>
           </tbody>
@@ -100,12 +107,17 @@ type ReviewRow = {
           <strong>{{ row.name }}</strong> · {{ row.rating }}/5 · {{ row.status }}
           <p>{{ row.text | slice: 0 : 160 }}<ng-container *ngIf="row.text.length > 160">…</ng-container></p>
           <div class="card-actions">
-            <button type="button" class="btn btn-sm" (click)="openDetail(row)">Read full</button>
-            <select [ngModel]="row.status" (ngModelChange)="onStatusChange(row, $event)">
+            <button type="button" class="btn btn-sm btn-view" (click)="openDetail(row)">Read full</button>
+            <select
+              *ngIf="auth.canWrite()"
+              [ngModel]="row.status"
+              (ngModelChange)="onStatusChange(row, $event)"
+            >
               <option value="pending">Pending</option>
               <option value="approved">Approved</option>
               <option value="rejected">Rejected</option>
             </select>
+            <span *ngIf="!auth.canWrite()" class="muted">{{ row.status }}</span>
           </div>
         </div>
       </div>
@@ -180,6 +192,7 @@ type ReviewRow = {
   ],
 })
 export class ReviewsComponent implements OnInit {
+  readonly auth = inject(AdminAuthService);
   private readonly http = inject(HttpClient);
   private readonly confirm = inject(AdminConfirmService);
   private readonly notice = inject(AdminNoticeService);
@@ -238,6 +251,9 @@ export class ReviewsComponent implements OnInit {
   }
 
   private async patchAsync(row: ReviewRow, status: string): Promise<void> {
+    if (!requireWriteAccess(this.auth, this.notice)) {
+      return;
+    }
     if (status === row.status) {
       return;
     }
