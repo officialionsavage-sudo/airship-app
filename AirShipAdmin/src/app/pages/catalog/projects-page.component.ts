@@ -123,14 +123,16 @@ type ProjList = {
         </div>
         <div class="field">
           <label class="field-label-with-hint">
-            City (link ending)
+            City
             <app-admin-field-hint [text]="hint.citySlug" />
           </label>
-          <input
-            [(ngModel)]="pf.citySlug"
-            (ngModelChange)="onCitySlugChange()"
-            placeholder="Must match a city you already created"
-          />
+          <select [(ngModel)]="pf.citySlug" (ngModelChange)="onCitySlugChange()">
+            <option value="">Choose a city…</option>
+            <option *ngFor="let c of cityOptions" [value]="c.slug">{{ c.title }} ({{ c.slug }})</option>
+          </select>
+          <p class="filter-empty-hint" *ngIf="cityOptions.length === 0">
+            No cities yet. Add one under <a routerLink="/catalog/cities">Catalog → Cities</a> first.
+          </p>
         </div>
         <div class="field">
           <span class="field-label-with-hint">
@@ -220,6 +222,7 @@ type ProjList = {
           [(ngModel)]="pf.imagesJson"
           label="Gallery images"
           [fieldHint]="hint.gallery"
+          [maxCount]="10"
         />
         <app-admin-image-field
           [(ngModel)]="pf.heroImageBase64"
@@ -242,13 +245,6 @@ type ProjList = {
             <app-admin-field-hint [text]="hint.developerName" />
           </label>
           <input [(ngModel)]="pf.developerName" />
-        </div>
-        <div class="field">
-          <label class="field-label-with-hint">
-            Delivery date
-            <app-admin-field-hint [text]="hint.deliveryDate" />
-          </label>
-          <input [(ngModel)]="pf.deliveryDate" placeholder="e.g. 2026-12-31 — leave empty if unknown" />
         </div>
         <div class="field">
           <label class="field-label-with-hint">
@@ -351,6 +347,7 @@ export class ProjectsPageComponent implements OnInit {
   filtersLoading = false;
   filterOptionsError = '';
   filterCityLabel = '';
+  cityOptions: { id: string; slug: string; title: string }[] = [];
   private citySlugToId = new Map<string, string>();
 
   ngOnInit(): void {
@@ -376,15 +373,15 @@ export class ProjectsPageComponent implements OnInit {
 
   onCitySlugChange(): void {
     const slug = this.pf.citySlug.trim().toLowerCase();
-    const cityId = this.citySlugToId.get(slug);
+    const cityId = slug ? this.citySlugToId.get(slug) : undefined;
+    const picked = this.cityOptions.find((c) => c.slug.toLowerCase() === slug);
     if (cityId) {
-      this.filterCityLabel = slug;
+      this.filterCityLabel = picked?.title ?? slug;
       this.loadRealEstateFilterOptions(cityId);
     } else {
       this.realEstateFilterOptions = [];
-      this.filterOptionsError = slug
-        ? 'City not found — use the same link ending as in Cities.'
-        : '';
+      this.filterOptionsError = '';
+      this.filterCityLabel = '';
     }
   }
 
@@ -395,9 +392,12 @@ export class ProjectsPageComponent implements OnInit {
       })
       .subscribe({
         next: (r) => {
-          this.citySlugToId = new Map((r.items ?? []).map((c) => [c.slug.toLowerCase(), c.id]));
+          const items = r.items ?? [];
+          this.cityOptions = [...items].sort((a, b) => a.title.localeCompare(b.title));
+          this.citySlugToId = new Map(items.map((c) => [c.slug.toLowerCase(), c.id]));
         },
         error: () => {
+          this.cityOptions = [];
           this.citySlugToId = new Map();
         },
       });
@@ -473,7 +473,6 @@ export class ProjectsPageComponent implements OnInit {
       features: [] as string[],
       amenities: [] as string[],
       developerName: 'TBD',
-      deliveryDate: '',
       mapEmbedUrl: 'https://example.com/',
       catalogFilterIds: [] as string[],
     };
@@ -511,7 +510,6 @@ export class ProjectsPageComponent implements OnInit {
           features: Array.isArray(p.features) ? [...p.features.map((x: unknown) => String(x))] : [],
           amenities: Array.isArray(p.amenities) ? [...p.amenities.map((x: unknown) => String(x))] : [],
           developerName: p.developerName,
-          deliveryDate: p.deliveryDate ? String(p.deliveryDate).slice(0, 10) : '',
           mapEmbedUrl: p.mapEmbedUrl,
           catalogFilterIds: Array.isArray(p.catalogFilterIds) ? [...p.catalogFilterIds.map(String)] : [],
         };
@@ -566,6 +564,10 @@ export class ProjectsPageComponent implements OnInit {
     if (!images) {
       return;
     }
+    if (images.length > 10) {
+      this.error = ADMIN_MSG.galleryMax;
+      return;
+    }
     const body = {
       slug: this.pf.slug.trim(),
       citySlug: this.pf.citySlug.trim(),
@@ -582,7 +584,6 @@ export class ProjectsPageComponent implements OnInit {
       features: this.pf.features.map((s) => s.trim()).filter(Boolean),
       amenities: this.pf.amenities.map((s) => s.trim()).filter(Boolean),
       developerName: this.pf.developerName,
-      deliveryDate: this.pf.deliveryDate.trim() === '' ? null : this.pf.deliveryDate.trim(),
       mapEmbedUrl: this.pf.mapEmbedUrl,
       videoUrl: '',
       catalogFilterIds: this.pf.catalogFilterIds,

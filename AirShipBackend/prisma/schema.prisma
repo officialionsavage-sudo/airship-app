@@ -96,7 +96,6 @@ model Project {
   features         String[]
   amenities        String[]
   developerName    String
-  deliveryDate     DateTime?
   mapEmbedUrl      String
   videoUrl         String
   units            Unit[]

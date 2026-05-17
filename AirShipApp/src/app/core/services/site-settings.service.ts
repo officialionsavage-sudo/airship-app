@@ -1,12 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, catchError, of, shareReplay } from 'rxjs';
+import { Observable, catchError, map, of, shareReplay } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { resolveSiteContact, type ResolvedSiteContact } from '../site-contact';
 
 @Injectable({ providedIn: 'root' })
 export class SiteSettingsService {
   private readonly http = inject(HttpClient);
   private cache$: Observable<Record<string, string>> | null = null;
+  private contactCache$: Observable<ResolvedSiteContact> | null = null;
 
   /** Cached GET /api/site-settings (empty object on failure). */
   getSettings(): Observable<Record<string, string>> {
@@ -19,5 +21,16 @@ export class SiteSettingsService {
       );
     }
     return this.cache$;
+  }
+
+  /** Resolved contact + WhatsApp digits from site settings. */
+  getContact(): Observable<ResolvedSiteContact> {
+    if (!this.contactCache$) {
+      this.contactCache$ = this.getSettings().pipe(
+        map((map) => resolveSiteContact(map)),
+        shareReplay({ bufferSize: 1, refCount: false }),
+      );
+    }
+    return this.contactCache$;
   }
 }

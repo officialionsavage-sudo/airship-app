@@ -97,7 +97,6 @@ async function seedExtraCatalog(): Promise<void> {
           features: ['Sea view', 'Smart home', 'Concierge'],
           amenities: ['Pool', 'Gym', 'Parking'],
           developerName: 'Demo Developments',
-          deliveryDate: new Date(2028, (projectN % 12), 1),
           mapEmbedUrl: 'https://maps.google.com/?q=Egypt&output=embed',
           videoUrl: '',
           cityId: city.id,

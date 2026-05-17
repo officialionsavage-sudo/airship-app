@@ -547,7 +547,6 @@ export const openapiSpecification = {
           features: { type: 'array', items: { type: 'string' } },
           amenities: { type: 'array', items: { type: 'string' } },
           developerName: { type: 'string' },
-          deliveryDate: { type: 'string' },
           mapEmbedUrl: { type: 'string' },
           videoUrl: { type: 'string' },
           catalogFilterSlugs: {

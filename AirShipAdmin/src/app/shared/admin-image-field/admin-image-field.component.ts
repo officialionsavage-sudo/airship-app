@@ -2,12 +2,15 @@ import { NgIf } from '@angular/common';
 import { Component, EventEmitter, Input, Output, forwardRef, inject } from '@angular/core';
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { adminApiErrorMessage } from '../../core/admin-messages';
-import { resolveAdminImagePreviewSrc } from '../../core/admin-image-preview';
+import { resolveAdminImagePreviewSrc, truncateAdminImageUrl } from '../../core/admin-image-preview';
 import { AdminMediaUploadService } from '../../core/admin-media-upload.service';
 import { AdminFieldHintComponent } from '../admin-field-hint/admin-field-hint.component';
 
 /** Default max upload size for admin image fields (2 MB). */
 export const ADMIN_IMAGE_MAX_BYTES = 2 * 1024 * 1024;
+
+/** Max images per gallery field (project, unit, tour, offer). */
+export const ADMIN_GALLERY_MAX_IMAGES = 10;
 
 @Component({
   selector: 'app-admin-image-field',
@@ -50,9 +53,15 @@ export const ADMIN_IMAGE_MAX_BYTES = 2 * 1024 * 1024;
 
       <p class="err" *ngIf="fileError">{{ fileError }}</p>
 
+      <p class="empty" *ngIf="!value && !uploading">No image uploaded yet.</p>
+
+      <p class="ok" *ngIf="uploadSuccess">Uploaded — save the form to keep this image.</p>
+
       <div class="preview-wrap" *ngIf="previewSrc">
-        <img [src]="previewSrc" alt="" class="thumb" />
+        <img [src]="previewSrc" alt="" class="thumb" (error)="onPreviewError()" />
       </div>
+      <p class="url-line" *ngIf="value">{{ displayUrl }}</p>
+      <p class="warn" *ngIf="previewFailed && value">Preview unavailable — URL is stored; save to confirm.</p>
 
       <div class="manual" *ngIf="showManual">
         <textarea
@@ -122,6 +131,25 @@ export const ADMIN_IMAGE_MAX_BYTES = 2 * 1024 * 1024;
         font-size: 0.75rem;
         margin: 0.35rem 0 0;
       }
+      .empty,
+      .warn {
+        font-size: 0.72rem;
+        color: var(--admin-muted);
+        margin: 0.35rem 0 0;
+      }
+      .ok {
+        font-size: 0.72rem;
+        color: #4ade80;
+        margin: 0.35rem 0 0;
+      }
+      .url-line {
+        margin: 0.35rem 0 0;
+        font-size: 0.68rem;
+        font-family: ui-monospace, monospace;
+        color: var(--admin-muted);
+        word-break: break-all;
+        line-height: 1.35;
+      }
       .preview-wrap {
         margin-top: 0.55rem;
       }
@@ -175,6 +203,8 @@ export class AdminImageFieldComponent implements ControlValueAccessor {
   showManual = false;
   fileError = '';
   uploading = false;
+  uploadSuccess = false;
+  previewFailed = false;
 
   protected disabled = false;
 
@@ -189,10 +219,20 @@ export class AdminImageFieldComponent implements ControlValueAccessor {
     return resolveAdminImagePreviewSrc(this.value);
   }
 
+  get displayUrl(): string {
+    return truncateAdminImageUrl(this.value);
+  }
+
   writeValue(v: string | null): void {
     this.value = v ?? '';
     this.manualDraft = this.value;
     this.fileError = '';
+    this.uploadSuccess = false;
+    this.previewFailed = false;
+  }
+
+  onPreviewError(): void {
+    this.previewFailed = true;
   }
 
   registerOnChange(fn: (v: string) => void): void {
@@ -230,12 +270,16 @@ export class AdminImageFieldComponent implements ControlValueAccessor {
       return;
     }
     this.fileError = '';
+    this.uploadSuccess = false;
+    this.previewFailed = false;
     this.uploading = true;
     this.uploads.uploadImage(file, this.uploadScope).subscribe({
       next: (res) => {
         this.uploading = false;
         this.value = res.url;
         this.manualDraft = res.url;
+        this.uploadSuccess = true;
+        this.previewFailed = false;
         this.onChange(this.value);
         this.onTouched();
         this.imageChange.emit();
@@ -251,6 +295,8 @@ export class AdminImageFieldComponent implements ControlValueAccessor {
     this.value = '';
     this.manualDraft = '';
     this.fileError = '';
+    this.uploadSuccess = false;
+    this.previewFailed = false;
     this.onChange('');
     this.onTouched();
     this.imageChange.emit();
@@ -263,6 +309,8 @@ export class AdminImageFieldComponent implements ControlValueAccessor {
       return;
     }
     this.value = next;
+    this.uploadSuccess = false;
+    this.previewFailed = false;
     this.onChange(this.value);
     this.onTouched();
     this.fileError = '';

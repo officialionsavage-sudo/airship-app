@@ -1,18 +1,5 @@
 <section class="tour-page" *ngIf="!loading && tour && city">
-  <section class="gallery glass-card reveal">
-    <img class="main-image" [src]="selectedImage" [alt]="tour.title" />
-    <div class="thumbs">
-      <button
-        type="button"
-        class="thumb"
-        *ngFor="let image of tour.images; let i = index"
-        [class.active]="selectedImageIndex === i"
-        (click)="selectImage(i)"
-      >
-        <img [src]="image" [alt]="tour.title + ' image ' + (i + 1)" />
-      </button>
-    </div>
-  </section>
+  <app-gallery class="glass-card reveal" [images]="tour.images" [alt]="tour.title" />
 
   <section class="content-grid">
     <article class="details glass-card reveal">

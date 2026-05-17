@@ -3,20 +3,7 @@
     <a routerLink="/offers" class="back-link">{{ 'offers.detailBack' | t }}</a>
   </nav>
 
-  <section class="gallery glass-card reveal">
-    <img class="main-image" [src]="selectedImage" [alt]="offer.title" />
-    <div class="thumbs" *ngIf="offer.images?.length">
-      <button
-        type="button"
-        class="thumb"
-        *ngFor="let image of offer.images; let i = index"
-        [class.active]="selectedImageIndex === i"
-        (click)="selectImage(i)"
-      >
-        <img [src]="image" [alt]="offer.title + ' image ' + (i + 1)" />
-      </button>
-    </div>
-  </section>
+  <app-gallery class="glass-card reveal" [images]="offer.images" [alt]="offer.title" />
 
   <section class="content-grid">
     <article class="details glass-card reveal">

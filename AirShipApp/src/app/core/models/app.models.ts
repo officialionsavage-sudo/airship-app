@@ -78,7 +78,6 @@ export interface Project {
   features: string[];
   amenities: string[];
   developerName: string;
-  deliveryDate: string;
   mapEmbedUrl: string;
   videoUrl: string;
   units: Unit[];

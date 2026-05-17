@@ -9,24 +9,27 @@ import { BookingApiService } from '../../core/services/booking-api.service';
 import { CitiesApiService } from '../../core/services/cities-api.service';
 import { ProjectsApiService } from '../../core/services/projects-api.service';
 import { UnitsApiService } from '../../core/services/units-api.service';
+import { SiteSettingsService } from '../../core/services/site-settings.service';
 import { ToastService } from '../../core/services/toast.service';
+import { resolveSiteContact } from '../../core/site-contact';
+import { buildWhatsAppUrlFromLines } from '../../core/utils/whatsapp.util';
+import { GalleryComponent } from '../../shared/components/gallery/gallery.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-unit-details',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
+  imports: [CommonModule, ReactiveFormsModule, GalleryComponent, TranslatePipe],
   templateUrl: './unit-details.component.html',
   styleUrl: './unit-details.component.scss',
 })
 export class UnitDetailsComponent {
   loading = true;
   submitting = false;
-  selectedImageIndex = 0;
-
   city?: City;
   project?: Project;
   unit?: Unit;
+  private waDigits = resolveSiteContact({}).waDigits;
 
   readonly form = this.fb.group({
     checkIn: ['', Validators.required],
@@ -43,8 +46,16 @@ export class UnitDetailsComponent {
     private readonly bookingApi: BookingApiService,
     private readonly fb: FormBuilder,
     private readonly destroyRef: DestroyRef,
+    private readonly siteSettings: SiteSettingsService,
     private readonly toast: ToastService,
   ) {
+    this.siteSettings
+      .getContact()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((contact) => {
+        this.waDigits = contact.waDigits;
+      });
+
     this.route.paramMap
       .pipe(
         switchMap((params) => {
@@ -64,20 +75,8 @@ export class UnitDetailsComponent {
         this.city = city;
         this.project = project;
         this.unit = unit;
-        this.selectedImageIndex = 0;
         this.loading = false;
       });
-  }
-
-  selectImage(index: number): void {
-    this.selectedImageIndex = index;
-  }
-
-  get selectedImage(): string {
-    if (!this.unit) {
-      return '';
-    }
-    return this.unit.images[this.selectedImageIndex] ?? this.unit.images[0];
   }
 
   get discountedDay(): number {
@@ -154,7 +153,7 @@ export class UnitDetailsComponent {
       `Month: EGP ${this.discountedMonth.toLocaleString()}`,
       'Please contact me with availability.',
     ];
-    const url = `https://wa.me/201144841607?text=${encodeURIComponent(lines.join('\n'))}`;
+    const url = buildWhatsAppUrlFromLines(lines, { waDigits: this.waDigits });
     window.open(url, '_blank', 'noopener,noreferrer');
   }
 }

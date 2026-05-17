@@ -170,6 +170,7 @@ type OfferFull = {
           [(ngModel)]="f.imagesJson"
           label="Offer images"
           [fieldHint]="hint.images"
+          [maxCount]="10"
         />
         <p class="err" *ngIf="error">{{ error }}</p>
         <div class="admin-modal-actions">
@@ -314,6 +315,10 @@ export class OffersPageComponent implements OnInit {
     }
     if (images.length === 0 || !images.some((x) => x.trim())) {
       this.error = 'Add at least one image.';
+      return;
+    }
+    if (images.length > 10) {
+      this.error = ADMIN_MSG.galleryMax;
       return;
     }
     const ok = await this.confirm.open({

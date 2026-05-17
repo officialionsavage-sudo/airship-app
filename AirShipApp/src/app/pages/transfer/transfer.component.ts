@@ -184,10 +184,10 @@ export class TransferComponent implements OnInit {
       });
 
     this.siteSettings
-      .getSettings()
+      .getContact()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((map) => {
-        this.contact = resolveSiteContact(map);
+      .subscribe((contact) => {
+        this.contact = contact;
         this.cdr.markForCheck();
       });
   }

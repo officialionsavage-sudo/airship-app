@@ -9,6 +9,8 @@ const imagePayloadSchema = z
     message: 'Use the upload button (stored on your server) or paste an https URL — not base64.',
   });
 const imagePayloadArraySchema = z.array(imagePayloadSchema);
+/** Gallery fields on project, unit, tour, offer (matches Admin UI cap). */
+export const galleryImagesSchema = imagePayloadArraySchema.max(10, 'At most 10 images allowed');
 
 export const siteContentPutSchema = z.object({
   payload: z.unknown(),
@@ -75,12 +77,11 @@ export const projectWriteSchema = z.object({
   propertyType: propertyTypeApiSchema,
   description: z.string(),
   shortDescription: z.string(),
-  images: imagePayloadArraySchema,
+  images: galleryImagesSchema,
   heroImageBase64: imagePayloadSchema,
   features: z.array(z.string()),
   amenities: z.array(z.string()),
   developerName: z.string().min(1),
-  deliveryDate: z.union([z.string(), z.null()]).optional(),
   mapEmbedUrl: z.string().min(1),
   videoUrl: z.string().optional().default(''),
   catalogFilterIds: catalogFilterIdsSchema,
@@ -89,7 +90,7 @@ export const projectWriteSchema = z.object({
 export const unitWriteSchema = z.object({
   slug: z.string().min(1).regex(slugRegex),
   title: z.string().min(1),
-  images: imagePayloadArraySchema,
+  images: galleryImagesSchema,
   size: z.number().positive(),
   beds: z.number().int().nonnegative(),
   baths: z.number().int().nonnegative(),
@@ -122,7 +123,7 @@ export const tourWriteSchema = z.object({
   departureTime: z.string().min(1),
   groupSize: z.string().min(1),
   overview: z.string(),
-  images: imagePayloadArraySchema,
+  images: galleryImagesSchema,
   itinerary: z.array(z.string()),
   included: z.array(z.string()),
   notIncluded: z.array(z.string()),
@@ -142,7 +143,7 @@ const optionalValidUntil = z
 export const offerWriteSchema = z.object({
   title: z.string().min(1),
   description: z.string(),
-  images: imagePayloadArraySchema,
+  images: galleryImagesSchema,
   oldPrice: z.number().int().nonnegative(),
   newPrice: z.number().int().nonnegative(),
   discountPercent: z.number().int().min(0).max(100),

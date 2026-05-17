@@ -2,6 +2,7 @@ import { NgFor, NgIf } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { ADMIN_MSG, adminApiErrorMessage } from '../../core/admin-messages';
 import type { AdminPaginated } from '../../core/admin-paginated';
 import { apiUrl } from '../../core/api-url';
@@ -30,6 +31,7 @@ type TourList = {
   standalone: true,
   imports: [
     FormsModule,
+    RouterLink,
     NgFor,
     NgIf,
     HelpPanelComponent,
@@ -104,10 +106,16 @@ type TourList = {
         </div>
         <div class="field">
           <label class="field-label-with-hint">
-            City (link ending)
+            City
             <app-admin-field-hint [text]="hint.citySlug" />
           </label>
-          <input [(ngModel)]="f.citySlug" (ngModelChange)="onTourCitySlugChange()" placeholder="Must match an existing city" />
+          <select [(ngModel)]="f.citySlug" (ngModelChange)="onTourCitySlugChange()">
+            <option value="">Choose a city…</option>
+            <option *ngFor="let c of cityOptions" [value]="c.slug">{{ c.title }} ({{ c.slug }})</option>
+          </select>
+          <p class="filter-empty-hint" *ngIf="cityOptions.length === 0">
+            No cities yet. Add one under <a routerLink="/catalog/cities">Catalog → Cities</a> first.
+          </p>
         </div>
         <div class="field">
           <label class="field-label-with-hint">
@@ -188,6 +196,7 @@ type TourList = {
           [(ngModel)]="f.imagesJson"
           label="Tour gallery images"
           [fieldHint]="hint.gallery"
+          [maxCount]="10"
         />
         <app-admin-string-list
           [(ngModel)]="f.itinerary"
@@ -250,8 +259,8 @@ export class ToursPageComponent implements OnInit {
   f = this.empty();
   error = '';
 
-  /** Resolve city slug → id for loading tour catalog filters in the modal. */
-  private cityOpts: { id: string; slug: string }[] = [];
+  /** Cities for the modal dropdown and tour filter loading. */
+  cityOptions: { id: string; slug: string; title: string }[] = [];
   tourFilterOptions: { id: string; title: string; slug: string }[] = [];
 
   ngOnInit(): void {
@@ -330,22 +339,22 @@ export class ToursPageComponent implements OnInit {
 
   private loadCityOpts(): void {
     this.http
-      .get<AdminPaginated<{ id: string; slug: string }>>(apiUrl('/api/admin/cities'), {
-        params: { page: 1, pageSize: 500 },
+      .get<AdminPaginated<{ id: string; slug: string; title: string }>>(apiUrl('/api/admin/cities'), {
+        params: { page: '1', pageSize: '500' },
       })
       .subscribe({
         next: (r) => {
-          this.cityOpts = r.items.map((c) => ({ id: c.id, slug: c.slug }));
+          this.cityOptions = [...(r.items ?? [])].sort((a, b) => a.title.localeCompare(b.title));
         },
         error: () => {
-          this.cityOpts = [];
+          this.cityOptions = [];
         },
       });
   }
 
   onTourCitySlugChange(): void {
     const slug = this.f.citySlug.trim();
-    const row = this.cityOpts.find((c) => c.slug === slug);
+    const row = this.cityOptions.find((c) => c.slug === slug);
     this.f.catalogFilterIds = [];
     this.refreshTourFilters(row?.id ?? null);
   }
@@ -463,6 +472,10 @@ export class ToursPageComponent implements OnInit {
     }
     const images = this.parseImages();
     if (!images) {
+      return;
+    }
+    if (images.length > 10) {
+      this.error = ADMIN_MSG.galleryMax;
       return;
     }
     const trimLines = (xs: string[]) => xs.map((s) => s.trim()).filter(Boolean);

@@ -39,7 +39,6 @@ type ProjectDetail = {
   locationName: string;
   locationSlug: string;
   developerName: string;
-  deliveryDate: string | null;
   mapEmbedUrl: string;
   city: { id: string; slug: string; title?: string };
   _count: { units: number };
@@ -241,6 +240,7 @@ type ProjectDetail = {
           [(ngModel)]="pf.imagesJson"
           label="Gallery images"
           [fieldHint]="projHint.gallery"
+          [maxCount]="10"
         />
         <app-admin-image-field
           [(ngModel)]="pf.heroImageBase64"
@@ -263,13 +263,6 @@ type ProjectDetail = {
             <app-admin-field-hint [text]="projHint.developerName" />
           </label>
           <input [(ngModel)]="pf.developerName" />
-        </div>
-        <div class="field">
-          <label class="field-label-with-hint">
-            Delivery date
-            <app-admin-field-hint [text]="projHint.deliveryDate" />
-          </label>
-          <input [(ngModel)]="pf.deliveryDate" placeholder="YYYY-MM-DD or empty" />
         </div>
         <div class="field">
           <label class="field-label-with-hint">
@@ -305,6 +298,7 @@ type ProjectDetail = {
           [(ngModel)]="uf.imagesJson"
           label="Unit gallery images"
           [fieldHint]="unitHint.gallery"
+          [maxCount]="10"
         />
         <div class="field">
           <label class="field-label-with-hint">
@@ -652,7 +646,6 @@ export class ProjectDetailPageComponent implements OnInit {
           locationName: p.locationName ?? '',
           locationSlug: p.locationSlug ?? '',
           developerName: p.developerName ?? '',
-          deliveryDate: p.deliveryDate ?? null,
           mapEmbedUrl: p.mapEmbedUrl ?? '',
           city: { id: p.city?.id ?? '', slug: p.city?.slug ?? '', title: p.city?.title },
           _count: p._count ?? { units: 0 },
@@ -684,7 +677,6 @@ export class ProjectDetailPageComponent implements OnInit {
       features: Array.isArray(p.features) ? [...p.features.map((x: unknown) => String(x))] : [],
       amenities: Array.isArray(p.amenities) ? [...p.amenities.map((x: unknown) => String(x))] : [],
       developerName: p.developerName,
-      deliveryDate: p.deliveryDate ? String(p.deliveryDate).slice(0, 10) : '',
       mapEmbedUrl: p.mapEmbedUrl,
       catalogFilterIds: Array.isArray(p.catalogFilterIds) ? [...p.catalogFilterIds.map(String)] : [],
     };
@@ -707,7 +699,6 @@ export class ProjectDetailPageComponent implements OnInit {
       features: [] as string[],
       amenities: [] as string[],
       developerName: '',
-      deliveryDate: '',
       mapEmbedUrl: '',
       catalogFilterIds: [] as string[],
     };
@@ -791,6 +782,10 @@ export class ProjectDetailPageComponent implements OnInit {
     if (!images) {
       return;
     }
+    if (images.length > 10) {
+      this.error = ADMIN_MSG.galleryMax;
+      return;
+    }
     this.error = '';
     const body = {
       slug: this.pf.slug.trim(),
@@ -808,7 +803,6 @@ export class ProjectDetailPageComponent implements OnInit {
       features: this.pf.features.map((s) => s.trim()).filter(Boolean),
       amenities: this.pf.amenities.map((s) => s.trim()).filter(Boolean),
       developerName: this.pf.developerName,
-      deliveryDate: this.pf.deliveryDate.trim() === '' ? null : this.pf.deliveryDate.trim(),
       mapEmbedUrl: this.pf.mapEmbedUrl,
       videoUrl: '',
       catalogFilterIds: this.pf.catalogFilterIds,
@@ -914,6 +908,10 @@ export class ProjectDetailPageComponent implements OnInit {
     }
     const images = this.parseImagesJson(this.uf.imagesJson);
     if (!images) {
+      return;
+    }
+    if (images.length > 10) {
+      this.error = ADMIN_MSG.galleryMax;
       return;
     }
     const body = {

@@ -1,1 +1,18 @@
-<div class="grid"><img *ngFor="let image of images" [src]="image" alt="gallery image" class="glass-card" /></div>
+<div class="media-gallery__main" *ngIf="mainSrc">
+  <img [src]="mainSrc" [alt]="alt" />
+</div>
+
+<div class="media-gallery__thumbs-wrap" *ngIf="hasThumbs">
+  <div class="media-gallery__thumbs" role="list">
+    <button
+      type="button"
+      class="media-gallery__thumb"
+      role="listitem"
+      *ngFor="let image of images; let i = index"
+      [class.is-active]="selectedIndex === i"
+      (click)="select(i)"
+    >
+      <img [src]="image" [alt]="alt + ' image ' + (i + 1)" />
+    </button>
+  </div>
+</div>

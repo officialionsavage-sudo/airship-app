@@ -19,12 +19,6 @@ import { getAdminPagination } from './admin-pagination.js';
 
 export const adminCatalogRouter = Router();
 
-function parseDeliveryInput(v: string | null | undefined): Date | null {
-  if (v == null || v === '') return null;
-  const d = new Date(v);
-  return Number.isNaN(d.getTime()) ? null : d;
-}
-
 async function replaceProjectCatalogFilters(
   tx: Prisma.TransactionClient,
   projectId: string,
@@ -386,7 +380,6 @@ adminCatalogRouter.post('/projects', async (req, res, next) => {
           features: body.features,
           amenities: body.amenities,
           developerName: body.developerName,
-          deliveryDate: parseDeliveryInput(body.deliveryDate ?? undefined),
           mapEmbedUrl: body.mapEmbedUrl,
           videoUrl: body.videoUrl,
         },
@@ -443,7 +436,6 @@ adminCatalogRouter.put('/projects/:id', async (req, res, next) => {
           features: body.features,
           amenities: body.amenities,
           developerName: body.developerName,
-          deliveryDate: parseDeliveryInput(body.deliveryDate ?? undefined),
           mapEmbedUrl: body.mapEmbedUrl,
           videoUrl: body.videoUrl,
         },

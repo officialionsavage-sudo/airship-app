@@ -30,7 +30,7 @@ export const LISTING_FILTERS_HINTS = {
 
 export const PROJECT_HINTS = {
   slug: 'Unique project slug in URLs. Lowercase, hyphens only.',
-  citySlug: 'Must exactly match an existing city slug from Cities.',
+  citySlug: 'Pick a city you already created under Catalog → Cities.',
   title: 'Marketing title shown on listings and detail.',
   startingPrice: 'Optional headline price (integer). Display logic lives in the public app.',
   locationName: 'Human-readable area label (e.g. district name).',
@@ -40,12 +40,11 @@ export const PROJECT_HINTS = {
   propertyType: 'Used for icons/filters on the public site.',
   shortDescription: 'Short teaser on cards.',
   description: 'Full narrative body on the project page.',
-  gallery: 'Ordered gallery images. Upload each slot — files are stored on your API server as URLs.',
+  gallery: 'Up to 10 gallery images. Upload each slot — files are stored on your API server as URLs.',
   heroImage: 'Primary hero image for the project detail header.',
   features: 'Bullet-style lines (one input per line). Stored as string[].',
   amenities: 'Same as features — amenity labels one per line.',
   developerName: 'Developer label shown in project meta.',
-  deliveryDate: 'Expected completion date (YYYY-MM-DD) or leave empty for null.',
   mapEmbedUrl: 'Full embed URL or map link shown on the project page.',
   videoUrl: 'Promo or walkthrough video URL.',
 } as const;
@@ -53,7 +52,7 @@ export const PROJECT_HINTS = {
 export const UNIT_HINTS = {
   slug: 'Unique across all units. Used in booking/deep links.',
   title: 'Unit name shown in lists and detail.',
-  gallery: 'Unit-specific photos (same rules as project gallery).',
+  gallery: 'Up to 10 unit photos (same rules as project gallery).',
   size: 'Area number as shown to users (e.g. square meters).',
   beds: 'Bedroom count.',
   baths: 'Bathroom count.',
@@ -69,7 +68,7 @@ export const UNIT_HINTS = {
 
 export const TOUR_HINTS = {
   slug: 'Unique tour slug for URLs.',
-  citySlug: 'Existing city slug this tour belongs under.',
+  citySlug: 'Pick the city this tour is offered in.',
   title: 'Tour marketing title.',
   type: 'Category used for filtering (sea, desert, city, etc.).',
   rating: 'Average rating shown on cards (0–5).',
@@ -78,7 +77,7 @@ export const TOUR_HINTS = {
   departureTime: 'Typical departure time description.',
   groupSize: 'Typical group size text.',
   overview: 'Long overview body.',
-  gallery: 'Tour photo gallery.',
+  gallery: 'Up to 10 tour photos.',
   itinerary: 'Ordered steps; one line per stop or segment.',
   included: 'Included items; one per line.',
   notIncluded: 'Excluded items; one per line.',
@@ -92,7 +91,7 @@ export const OFFER_HINTS = {
   newPrice: 'Promotional price.',
   discountPercent: 'Badge percent (0–100).',
   sortOrder: 'Lower sorts earlier in offer lists.',
-  images: 'One or more images for the card gallery.',
+  images: 'Up to 10 images for the card gallery.',
   highlights: 'Short chips under the title (e.g. “Limited time”, “Marina front”).',
   features: 'Bullet list of key selling points.',
   included: 'What the guest gets — one item per line.',
@@ -117,10 +116,11 @@ export const CAR_HINTS = {
   image: 'Thumbnail in car picker — data URI, HTTPS URL, or relative site path.',
 } as const;
 
+/** @deprecated Site settings uses labeled fields in site-contact-settings.fields.ts */
 export const SITE_SETTING_HINTS = {
-  key:
-    'Stable machine key; exposed at GET /api/site-settings. Contact/WhatsApp: contact_phone, contact_whatsapp, contact_email, contact_location, contact_maps_query (optional), contact_hours_line_1..3.',
-  value: 'Human-readable string for that key. Public app reads known keys for footer/contact blocks and WhatsApp.',
+  key: 'Internal setting name (not shown in the contact form).',
+  value: 'Value shown on the public website.',
+  whatsappPinned: 'International format with country code, e.g. +20 114 484 1607.',
 } as const;
 
 /** Home CMS form — keys match sections for readability. */

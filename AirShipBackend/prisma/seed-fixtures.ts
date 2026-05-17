@@ -141,7 +141,7 @@ export const PROJECTS = [
     id: 'p1', slug: 'azure-cove', citySlug: 'hurghada', title: 'Azure Cove Residences', startingPrice: 4200000, locationName: 'Marina', locationSlug: 'marina', status: 'under-construction', propertyType: 'apartment',
     description: 'Marina-facing branded residences with immersive amenities and curated concierge lifestyle.', shortDescription: 'Luxury apartments over Hurghada Marina.',
     images: [IMG1, IMG2, IMG4], heroImage: IMG1, features: ['Sea view decks', 'Smart homes', 'Private lounge'], amenities: ['Gym', 'Spa', 'Kids zone', 'Infinity pool'],
-    developerName: 'Red Horizon Developments', deliveryDate: '2028-06-01',
+    developerName: 'Red Horizon Developments',
     mapEmbedUrl: 'https://maps.google.com/?q=Hurghada+Marina&output=embed', videoUrl: 'https://www.youtube.com/watch?v=ysz5S6PUM-U',
     units: UNITS.filter((unit) => unit.projectSlug === 'azure-cove'),
   },
@@ -149,7 +149,7 @@ export const PROJECTS = [
     id: 'p8', slug: 'soma-bay-pearl-residences', citySlug: 'soma-bay', title: 'Soma Bay Pearl Residences', startingPrice: 6900000, locationName: 'Soma Bay', locationSlug: 'soma-bay', status: 'launching', propertyType: 'apartment',
     description: 'Resort residences close to golf, beach clubs, and premium wellness facilities.', shortDescription: 'Luxury resort apartments in Soma Bay.',
     images: [IMG4, IMG2, IMG5], heroImage: IMG4, features: ['Beach club access', 'Golf proximity', 'Serviced living'], amenities: ['Spa', 'Gym', 'Infinity pool', 'Concierge'],
-    developerName: 'Bayline Developments', deliveryDate: '2029-01-01',
+    developerName: 'Bayline Developments',
     mapEmbedUrl: 'https://maps.google.com/?q=Soma+Bay&output=embed', videoUrl: 'https://www.youtube.com/watch?v=ScMzIvxBSi4',
     units: [
       {
@@ -168,7 +168,7 @@ export const PROJECTS = [
     id: 'p9', slug: 'marsa-alam-eco-shores', citySlug: 'marsa-alam', title: 'Eco Shores Marsa Alam', startingPrice: 4100000, locationName: 'Beachfront', locationSlug: 'beachfront', status: 'under-construction', propertyType: 'chalet',
     description: 'Nature-forward chalets designed for quiet retreats and marine excursions.', shortDescription: 'Eco-inspired chalets in Marsa Alam.',
     images: [IMG3, IMG4, IMG2], heroImage: IMG3, features: ['Low-density layout', 'Solar-ready', 'Nature trails'], amenities: ['Beach access', 'Yoga deck', 'Shuttle'],
-    developerName: 'Green Tide', deliveryDate: '2028-11-01',
+    developerName: 'Green Tide',
     mapEmbedUrl: 'https://maps.google.com/?q=Marsa+Alam&output=embed', videoUrl: 'https://www.youtube.com/watch?v=ysz5S6PUM-U',
     units: [
       {
@@ -188,7 +188,7 @@ export const PROJECTS = [
     id: 'p6', slug: 'hurghada-downtown-heights', citySlug: 'hurghada', title: 'Downtown Heights', startingPrice: 3600000, locationName: 'Downtown', locationSlug: 'downtown', status: 'ready', propertyType: 'studio',
     description: 'Urban studios and compact suites close to restaurants and transport.', shortDescription: 'Ready studios in Hurghada Downtown.',
     images: [IMG4, IMG1, IMG2], heroImage: IMG4, features: ['Walkable district', 'Work-from-home ready', 'Security'], amenities: ['Gym', 'Rooftop lounge', 'Co-working'],
-    developerName: 'Blue Gate', deliveryDate: '2026-11-01',
+    developerName: 'Blue Gate',
     mapEmbedUrl: 'https://maps.google.com/?q=Hurghada+Downtown&output=embed', videoUrl: 'https://www.youtube.com/watch?v=ScMzIvxBSi4',
     units: [
       {
@@ -208,7 +208,7 @@ export const PROJECTS = [
     id: 'p3', slug: 'sharm-horizon', citySlug: 'sharm-el-sheikh', title: 'Sharm Horizon Residences', startingPrice: 5100000, locationName: 'Naama Bay', locationSlug: 'naama-bay', status: 'ready', propertyType: 'apartment',
     description: 'Panoramic serviced residences close to beaches and nightlife districts.', shortDescription: 'Ready serviced apartments in Sharm El Sheikh.',
     images: [IMG2, IMG1, IMG4], heroImage: IMG2, features: ['Sea-facing balconies', 'Hotel services', 'Smart AC control'], amenities: ['Gym', 'Pool', 'Concierge'],
-    developerName: 'Sinai Gate Developments', deliveryDate: '2027-02-01',
+    developerName: 'Sinai Gate Developments',
     mapEmbedUrl: 'https://maps.google.com/?q=Naama+Bay&output=embed', videoUrl: 'https://www.youtube.com/watch?v=ysz5S6PUM-U',
     units: UNITS.filter((unit) => unit.projectSlug === 'sharm-horizon'),
   },
@@ -216,7 +216,7 @@ export const PROJECTS = [
     id: 'p4', slug: 'gouna-lagoon-lofts', citySlug: 'el-gouna', title: 'Gouna Lagoon Lofts', startingPrice: 6200000, locationName: 'Abu Tig Marina', locationSlug: 'abu-tig-marina', status: 'launching', propertyType: 'townhouse',
     description: 'Lofts and townhouses around private lagoons with marina access.', shortDescription: 'Lagoon-facing homes in El Gouna.',
     images: [IMG5, IMG3, IMG1], heroImage: IMG5, features: ['Lagoon docks', 'Smart security', 'Solar-ready'], amenities: ['Beach club', 'Marina', 'Fitness zone'],
-    developerName: 'Lagoon Axis', deliveryDate: '2028-09-01',
+    developerName: 'Lagoon Axis',
     mapEmbedUrl: 'https://maps.google.com/?q=El+Gouna&output=embed', videoUrl: 'https://www.youtube.com/watch?v=ScMzIvxBSi4',
     units: UNITS.filter((unit) => unit.projectSlug === 'gouna-lagoon-lofts'),
   },
@@ -224,7 +224,7 @@ export const PROJECTS = [
     id: 'p5', slug: 'makadi-pearl-bay', citySlug: 'makadi-bay', title: 'Makadi Pearl Bay', startingPrice: 4500000, locationName: 'Makadi', locationSlug: 'makadi', status: 'under-construction', propertyType: 'chalet',
     description: 'Family-friendly chalets in an all-season resort district.', shortDescription: 'Modern chalets in Makadi Bay.',
     images: [IMG1, IMG4, IMG2], heroImage: IMG4, features: ['Resort access', 'Shuttle service', 'Family club'], amenities: ['Aqua park', 'Kids area', 'Medical center'],
-    developerName: 'Coastal Nest', deliveryDate: '2028-01-01',
+    developerName: 'Coastal Nest',
     mapEmbedUrl: 'https://maps.google.com/?q=Makadi+Bay&output=embed', videoUrl: 'https://www.youtube.com/watch?v=ysz5S6PUM-U',
     units: UNITS.filter((unit) => unit.projectSlug === 'makadi-pearl-bay'),
   },
@@ -232,7 +232,7 @@ export const PROJECTS = [
     id: 'p2', slug: 'coral-bay-estates', citySlug: 'sahl-hasheesh', title: 'Coral Bay Estates', startingPrice: 9800000, locationName: 'Beachfront', locationSlug: 'beachfront', status: 'launching', propertyType: 'villa',
     description: 'Ultra-luxury gated villas combining tropical landscape design and private shoreline access.', shortDescription: 'Beachfront villas in Sahl Hasheesh.',
     images: [IMG5, IMG3, IMG2], heroImage: IMG5, features: ['Private beaches', 'Clubhouse', 'Security 24/7'], amenities: ['Marina access', 'Wellness center', 'Fine dining'],
-    developerName: 'Nile Coast Holdings', deliveryDate: '2029-03-01',
+    developerName: 'Nile Coast Holdings',
     mapEmbedUrl: 'https://maps.google.com/?q=Sahl+Hasheesh&output=embed', videoUrl: 'https://www.youtube.com/watch?v=ScMzIvxBSi4',
     units: UNITS.filter((unit) => unit.projectSlug === 'coral-bay-estates'),
   },
@@ -241,7 +241,7 @@ export const PROJECTS = [
     id: 'p7', slug: 'dahab-blue-ridge', citySlug: 'dahab', title: 'Dahab Blue Ridge', startingPrice: 3900000, locationName: 'Lagoon', locationSlug: 'lagoon', status: 'launching', propertyType: 'chalet',
     description: 'Low-rise chalets designed for remote work and sea sports lifestyle.', shortDescription: 'Chalets by Dahab Lagoon.',
     images: [IMG3, IMG2, IMG5], heroImage: IMG3, features: ['Breezy patios', 'Storage for gear', 'Community vibe'], amenities: ['Kite center', 'Café', 'Yoga deck'],
-    developerName: 'South Sinai Living', deliveryDate: '2028-05-01',
+    developerName: 'South Sinai Living',
     mapEmbedUrl: 'https://maps.google.com/?q=Dahab+Lagoon&output=embed', videoUrl: 'https://www.youtube.com/watch?v=ysz5S6PUM-U',
     units: [
       {
@@ -275,7 +275,6 @@ export const PROJECTS = [
     features: ['Marina views', 'Quiet bay breeze', 'Day-trip boating'],
     amenities: ['Pool', 'Gym', 'Concierge desk'],
     developerName: 'Safaga Shoreline',
-    deliveryDate: '2027-04-01',
     mapEmbedUrl: 'https://maps.google.com/?q=Safaga+Egypt&output=embed',
     videoUrl: 'https://www.youtube.com/watch?v=ysz5S6PUM-U',
     units: [

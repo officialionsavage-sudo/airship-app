@@ -7,8 +7,12 @@ import { catchError, finalize, of, switchMap } from 'rxjs';
 import { Offer } from '../../core/models/app.models';
 import { BookingApiService } from '../../core/services/booking-api.service';
 import { OffersApiService } from '../../core/services/offers-api.service';
+import { SiteSettingsService } from '../../core/services/site-settings.service';
 import { ToastService } from '../../core/services/toast.service';
+import { resolveSiteContact } from '../../core/site-contact';
+import { buildWhatsAppUrlFromLines } from '../../core/utils/whatsapp.util';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
+import { GalleryComponent } from '../../shared/components/gallery/gallery.component';
 import { LoadingSkeletonComponent } from '../../shared/components/loading-skeleton/loading-skeleton.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
@@ -22,6 +26,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
     TranslatePipe,
     LoadingSkeletonComponent,
     EmptyStateComponent,
+    GalleryComponent,
   ],
   templateUrl: './offer-details.component.html',
   styleUrl: './offer-details.component.scss',
@@ -31,8 +36,7 @@ export class OfferDetailsComponent {
   notFound = false;
   submitting = false;
   offer?: Offer;
-  selectedImageIndex = 0;
-
+  private waDigits = resolveSiteContact({}).waDigits;
   readonly form = this.fb.group({
     date: ['', Validators.required],
     adults: [2, [Validators.required, Validators.min(1)]],
@@ -45,8 +49,16 @@ export class OfferDetailsComponent {
     private readonly bookingApi: BookingApiService,
     private readonly fb: FormBuilder,
     private readonly destroyRef: DestroyRef,
+    private readonly siteSettings: SiteSettingsService,
     private readonly toast: ToastService,
   ) {
+    this.siteSettings
+      .getContact()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((contact) => {
+        this.waDigits = contact.waDigits;
+      });
+
     this.route.paramMap
       .pipe(
         switchMap((params) => {
@@ -54,7 +66,6 @@ export class OfferDetailsComponent {
           this.loading = true;
           this.notFound = false;
           this.offer = undefined;
-          this.selectedImageIndex = 0;
           if (!id.trim()) {
             return of(null).pipe(finalize(() => (this.loading = false)));
           }
@@ -82,10 +93,6 @@ export class OfferDetailsComponent {
       });
   }
 
-  get selectedImage(): string {
-    return this.offer?.images?.[this.selectedImageIndex] ?? this.offer?.images?.[0] ?? '';
-  }
-
   get totalPrice(): number {
     if (!this.offer) {
       return 0;
@@ -93,10 +100,6 @@ export class OfferDetailsComponent {
     const values = this.form.getRawValue();
     const guests = (values.adults ?? 0) + (values.children ?? 0);
     return this.offer.newPrice * Math.max(1, guests);
-  }
-
-  selectImage(i: number): void {
-    this.selectedImageIndex = i;
   }
 
   formatValidUntil(iso: string): string {
@@ -160,7 +163,7 @@ export class OfferDetailsComponent {
       `Total: EGP ${this.totalPrice.toLocaleString()}`,
       'Please contact me with availability.',
     ];
-    const url = `https://wa.me/201144841607?text=${encodeURIComponent(lines.join('\n'))}`;
+    const url = buildWhatsAppUrlFromLines(lines, { waDigits: this.waDigits });
     window.open(url, '_blank', 'noopener,noreferrer');
   }
 }

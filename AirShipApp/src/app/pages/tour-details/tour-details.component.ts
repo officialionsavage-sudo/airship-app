@@ -8,24 +8,27 @@ import { City, Tour, TourPrice } from '../../core/models/app.models';
 import { BookingApiService } from '../../core/services/booking-api.service';
 import { CitiesApiService } from '../../core/services/cities-api.service';
 import { ToursApiService } from '../../core/services/tours-api.service';
+import { SiteSettingsService } from '../../core/services/site-settings.service';
 import { ToastService } from '../../core/services/toast.service';
 import { TranslationService } from '../../core/services/translation.service';
+import { resolveSiteContact } from '../../core/site-contact';
+import { buildWhatsAppUrlFromLines } from '../../core/utils/whatsapp.util';
+import { GalleryComponent } from '../../shared/components/gallery/gallery.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-tour-details',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
+  imports: [CommonModule, ReactiveFormsModule, GalleryComponent, TranslatePipe],
   templateUrl: './tour-details.component.html',
   styleUrl: './tour-details.component.scss',
 })
 export class TourDetailsComponent {
   loading = true;
   submitting = false;
-  selectedImageIndex = 0;
-
   city?: City;
   tour?: Tour;
+  private waDigits = resolveSiteContact({}).waDigits;
 
   readonly form = this.fb.group({
     date: ['', Validators.required],
@@ -40,9 +43,17 @@ export class TourDetailsComponent {
     private readonly bookingApi: BookingApiService,
     private readonly fb: FormBuilder,
     private readonly destroyRef: DestroyRef,
+    private readonly siteSettings: SiteSettingsService,
     private readonly toast: ToastService,
     private readonly i18n: TranslationService,
   ) {
+    this.siteSettings
+      .getContact()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((contact) => {
+        this.waDigits = contact.waDigits;
+      });
+
     this.route.paramMap
       .pipe(
         switchMap((params) => {
@@ -59,17 +70,8 @@ export class TourDetailsComponent {
       .subscribe(({ city, tour }) => {
         this.city = city;
         this.tour = tour;
-        this.selectedImageIndex = 0;
         this.loading = false;
       });
-  }
-
-  selectImage(index: number): void {
-    this.selectedImageIndex = index;
-  }
-
-  get selectedImage(): string {
-    return this.tour?.images[this.selectedImageIndex] ?? this.tour?.images[0] ?? '';
   }
 
   get anyDiscount(): boolean {
@@ -158,7 +160,7 @@ export class TourDetailsComponent {
       'Please contact me with availability.',
     ];
 
-    const url = `https://wa.me/201144841607?text=${encodeURIComponent(lines.join('\n'))}`;
+    const url = buildWhatsAppUrlFromLines(lines, { waDigits: this.waDigits });
     window.open(url, '_blank', 'noopener,noreferrer');
   }
 }

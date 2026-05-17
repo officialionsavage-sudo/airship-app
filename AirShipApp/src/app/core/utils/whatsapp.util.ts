@@ -1,5 +1,10 @@
+import { SITE_CONTACT_DEFAULTS } from '../site-contact';
+
 /** Country-code inclusive digits for wa.me (no +). */
-const FALLBACK_WA_DIGITS = '201144841607';
+function resolveWaDigits(waDigits?: string): string {
+  const stripped = (waDigits ?? '').replace(/\D/g, '');
+  return stripped.length >= 8 ? stripped : SITE_CONTACT_DEFAULTS.waDigits;
+}
 
 export function buildWhatsAppUrl(
   context: {
@@ -15,8 +20,7 @@ export function buildWhatsAppUrl(
   },
   options?: { waDigits?: string },
 ): string {
-  const stripped = (options?.waDigits ?? '').replace(/\D/g, '');
-  const waDigits = stripped.length >= 8 ? stripped : FALLBACK_WA_DIGITS;
+  const waDigits = resolveWaDigits(options?.waDigits);
 
   const lines = [
     'Hello AirShip Team,',
@@ -33,5 +37,13 @@ export function buildWhatsAppUrl(
     `Additional Notes: ${context.notes ?? 'None'}`,
   ];
 
+  return buildWhatsAppUrlFromLines(lines, options);
+}
+
+export function buildWhatsAppUrlFromLines(
+  lines: string[],
+  options?: { waDigits?: string },
+): string {
+  const waDigits = resolveWaDigits(options?.waDigits);
   return `https://wa.me/${waDigits}?text=${encodeURIComponent(lines.join('\n'))}`;
 }

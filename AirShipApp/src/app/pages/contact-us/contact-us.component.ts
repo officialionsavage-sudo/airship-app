@@ -39,10 +39,10 @@ export class ContactUsComponent implements OnInit {
 
   ngOnInit(): void {
     this.siteSettings
-      .getSettings()
+      .getContact()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((map) => {
-        this.contact = resolveSiteContact(map);
+      .subscribe((contact) => {
+        this.contact = contact;
       });
   }
 

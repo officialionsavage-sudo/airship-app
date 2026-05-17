@@ -2,9 +2,12 @@ import { NgFor, NgIf } from '@angular/common';
 import { Component, Input, forwardRef, inject } from '@angular/core';
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { adminApiErrorMessage } from '../../core/admin-messages';
-import { resolveAdminImagePreviewSrc } from '../../core/admin-image-preview';
+import { resolveAdminImagePreviewSrc, truncateAdminImageUrl } from '../../core/admin-image-preview';
 import { AdminMediaUploadService } from '../../core/admin-media-upload.service';
-import { ADMIN_IMAGE_MAX_BYTES } from '../admin-image-field/admin-image-field.component';
+import {
+  ADMIN_GALLERY_MAX_IMAGES,
+  ADMIN_IMAGE_MAX_BYTES,
+} from '../admin-image-field/admin-image-field.component';
 import { AdminFieldHintComponent } from '../admin-field-hint/admin-field-hint.component';
 
 /**
@@ -18,39 +21,50 @@ import { AdminFieldHintComponent } from '../admin-field-hint/admin-field-hint.co
     <div class="admin-gallery">
       <span class="lbl-row">
         <span class="lbl">{{ label }}</span>
+        <span class="count">{{ images.length }} / {{ maxCount }}</span>
         <app-admin-field-hint *ngIf="fieldHint" [text]="fieldHint" />
       </span>
-      <p class="hint">One image per slot (max {{ maxKb }} KB each). Uploaded to your API server.</p>
+      <p class="hint">
+        Up to {{ maxCount }} images (max {{ maxKb }} KB each). Uploaded to your API server.
+      </p>
 
       <input
         type="file"
         class="sr-only"
         accept="image/*"
-        [disabled]="disabled || uploading"
+        [disabled]="disabled || uploading || atMaxCount"
         #replaceOrAddInput
         (change)="onFilePicked($event, replaceOrAddInput)"
       />
 
+      <p class="empty" *ngIf="images.length === 0 && !uploading">No images yet — use Add image.</p>
+
+      <p class="ok" *ngIf="lastUploadSuccess">Image added — save the form to keep changes.</p>
+
       <div class="slots">
         <div class="slot" *ngFor="let img of images; let i = index">
+          <div class="slot-head">Image {{ i + 1 }}</div>
           <div class="slot-prev" *ngIf="previewFor(img); else noPrev">
             <img [src]="previewFor(img)!" alt="" class="thumb" />
           </div>
           <ng-template #noPrev>
-            <div class="slot-prev placeholder">No preview</div>
+            <div class="slot-prev placeholder">Preview unavailable</div>
           </ng-template>
-          <div class="slot-actions">
-            <button
-              type="button"
-              class="btn btn-small"
-              [disabled]="disabled || uploading"
-              (click)="pendingOp = { kind: 'replace', index: i }; replaceOrAddInput.click()"
-            >
-              Replace
-            </button>
-            <button type="button" class="btn btn-small danger" [disabled]="disabled || uploading" (click)="remove(i)">
-              Remove
-            </button>
+          <div class="slot-meta">
+            <p class="url-line">{{ urlLabel(img) }}</p>
+            <div class="slot-actions">
+              <button
+                type="button"
+                class="btn btn-small"
+                [disabled]="disabled || uploading"
+                (click)="pendingOp = { kind: 'replace', index: i }; replaceOrAddInput.click()"
+              >
+                Replace
+              </button>
+              <button type="button" class="btn btn-small danger" [disabled]="disabled || uploading" (click)="remove(i)">
+                Remove
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -59,11 +73,12 @@ import { AdminFieldHintComponent } from '../admin-field-hint/admin-field-hint.co
         <button
           type="button"
           class="btn btn-small"
-          [disabled]="disabled || uploading"
-          (click)="pendingOp = { kind: 'add' }; replaceOrAddInput.click()"
+          [disabled]="disabled || uploading || atMaxCount"
+          (click)="startAdd(replaceOrAddInput)"
         >
           {{ uploading ? 'Uploading…' : 'Add image' }}
         </button>
+        <span class="cap-hint" *ngIf="atMaxCount">Maximum {{ maxCount }} images reached.</span>
       </div>
 
       <p class="err" *ngIf="fileError">{{ fileError }}</p>
@@ -89,11 +104,29 @@ import { AdminFieldHintComponent } from '../admin-field-hint/admin-field-hint.co
         font-weight: 600;
         color: var(--admin-muted);
       }
+      .count {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--admin-text);
+        padding: 0.1rem 0.45rem;
+        border-radius: 6px;
+        background: rgba(148, 163, 184, 0.12);
+      }
       .hint {
         margin: 0.35rem 0 0.5rem;
         font-size: 0.72rem;
         color: var(--admin-muted);
         line-height: 1.35;
+      }
+      .empty {
+        font-size: 0.72rem;
+        color: var(--admin-muted);
+        margin: 0 0 0.5rem;
+      }
+      .ok {
+        font-size: 0.72rem;
+        color: #4ade80;
+        margin: 0 0 0.5rem;
       }
       .slots {
         display: flex;
@@ -110,6 +143,12 @@ import { AdminFieldHintComponent } from '../admin-field-hint/admin-field-hint.co
       }
       .slot:last-of-type {
         border-bottom: none;
+      }
+      .slot-head {
+        grid-column: 1 / -1;
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--admin-muted);
       }
       .thumb {
         width: 120px;
@@ -129,6 +168,21 @@ import { AdminFieldHintComponent } from '../admin-field-hint/admin-field-hint.co
         justify-content: center;
         font-size: 0.65rem;
         color: var(--admin-muted);
+        text-align: center;
+        padding: 0.25rem;
+      }
+      .slot-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+      }
+      .url-line {
+        margin: 0;
+        font-size: 0.68rem;
+        font-family: ui-monospace, monospace;
+        color: var(--admin-muted);
+        word-break: break-all;
+        line-height: 1.35;
       }
       .slot-actions {
         display: flex;
@@ -146,6 +200,14 @@ import { AdminFieldHintComponent } from '../admin-field-hint/admin-field-hint.co
       }
       .row-add {
         margin: 0.35rem 0;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .cap-hint {
+        font-size: 0.72rem;
+        color: var(--admin-muted);
       }
       .sr-only {
         position: absolute;
@@ -178,12 +240,14 @@ export class AdminImageJsonArrayComponent implements ControlValueAccessor {
   @Input() label = 'Images';
   @Input() fieldHint = '';
   @Input() maxBytes = ADMIN_IMAGE_MAX_BYTES;
+  @Input() maxCount = ADMIN_GALLERY_MAX_IMAGES;
   @Input() uploadScope = 'catalog';
 
   images: string[] = [];
   rawJson = '[]';
   fileError = '';
   uploading = false;
+  lastUploadSuccess = false;
 
   protected disabled = false;
 
@@ -196,9 +260,17 @@ export class AdminImageJsonArrayComponent implements ControlValueAccessor {
     return Math.round(this.maxBytes / 1024);
   }
 
+  get atMaxCount(): boolean {
+    return this.images.length >= this.maxCount;
+  }
+
   previewFor(v: string): string | null {
     const src = resolveAdminImagePreviewSrc(String(v ?? ''));
     return src || null;
+  }
+
+  urlLabel(v: string): string {
+    return truncateAdminImageUrl(String(v ?? ''));
   }
 
   writeValue(json: string | null): void {
@@ -210,6 +282,7 @@ export class AdminImageJsonArrayComponent implements ControlValueAccessor {
     }
     this.syncRawJson();
     this.fileError = '';
+    this.lastUploadSuccess = false;
   }
 
   registerOnChange(fn: (v: string) => void): void {
@@ -222,6 +295,15 @@ export class AdminImageJsonArrayComponent implements ControlValueAccessor {
 
   setDisabledState(isDisabled: boolean): void {
     this.disabled = isDisabled;
+  }
+
+  startAdd(input: HTMLInputElement): void {
+    if (this.atMaxCount) {
+      this.fileError = `Maximum ${this.maxCount} images allowed. Remove one to add another.`;
+      return;
+    }
+    this.pendingOp = { kind: 'add' };
+    input.click();
   }
 
   private syncRawJson(): void {
@@ -242,6 +324,10 @@ export class AdminImageJsonArrayComponent implements ControlValueAccessor {
     if (!op || !file) {
       return;
     }
+    if (op.kind === 'add' && this.atMaxCount) {
+      this.fileError = `Maximum ${this.maxCount} images allowed.`;
+      return;
+    }
     this.ingestFile(file, (url) => {
       if (op.kind === 'add') {
         this.images = [...this.images, url];
@@ -250,12 +336,14 @@ export class AdminImageJsonArrayComponent implements ControlValueAccessor {
         next[op.index] = url;
         this.images = next;
       }
+      this.lastUploadSuccess = true;
       this.propagate();
     });
   }
 
   remove(index: number): void {
     this.images = this.images.filter((_, i) => i !== index);
+    this.lastUploadSuccess = false;
     this.propagate();
   }
 

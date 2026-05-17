@@ -1,20 +1,10 @@
 <section class="project-details-page" *ngIf="!loading && project as project">
-  <section class="gallery-shell glass-card reveal">
-    <div class="selected-media">
-      <img [src]="selectedImage || project.heroImage" [alt]="project.title" />
-    </div>
-    <div class="thumb-strip">
-      <button
-        type="button"
-        class="thumb"
-        *ngFor="let image of project.images; let i = index"
-        [class.active]="selectedImageIndex === i"
-        (click)="selectImage(image, i)"
-      >
-        <img [src]="image" [alt]="project.title + ' image ' + (i + 1)" />
-      </button>
-    </div>
-  </section>
+  <app-gallery
+    class="glass-card reveal"
+    [images]="project.images"
+    [fallbackSrc]="project.heroImage"
+    [alt]="project.title"
+  />
 
   <section class="glass-card info reveal">
     <h1>{{ project.title }}</h1>
@@ -29,14 +19,17 @@
     <button class="btn-primary" type="button" (click)="openProjectLocation()">Open Location</button>
   </section>
 
-  <section class="feature-grid-wrap reveal">
-    <article class="glass-card feature-group">
+  <section
+    class="feature-grid-wrap reveal"
+    *ngIf="hasListItems(project.amenities) || hasListItems(project.features)"
+  >
+    <article class="glass-card feature-group" *ngIf="hasListItems(project.amenities)">
       <h3>Facilities</h3>
       <ul>
         <li *ngFor="let amenity of project.amenities">{{ amenity }}</li>
       </ul>
     </article>
-    <article class="glass-card feature-group">
+    <article class="glass-card feature-group" *ngIf="hasListItems(project.features)">
       <h3>Features</h3>
       <ul>
         <li *ngFor="let feature of project.features">{{ feature }}</li>
@@ -44,7 +37,7 @@
     </article>
   </section>
 
-  <section class="units-section reveal">
+  <section class="units-section reveal" *ngIf="project.units.length">
     <h2>Available Units</h2>
     <div class="units-grid">
       <article class="unit-card glass-card" *ngFor="let unit of project.units; let i = index" [style.animation-delay.ms]="i * 90">

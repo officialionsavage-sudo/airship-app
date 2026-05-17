@@ -5,18 +5,17 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { switchMap } from 'rxjs';
 import { Project } from '../../core/models/app.models';
 import { ProjectsApiService } from '../../core/services/projects-api.service';
+import { GalleryComponent } from '../../shared/components/gallery/gallery.component';
 
 @Component({
   selector: 'app-resort-details',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, GalleryComponent],
   templateUrl: './resort-details.component.html',
   styleUrl: './resort-details.component.scss',
 })
 export class ResortDetailsComponent {
   project?: Project;
-  selectedImage = '';
-  selectedImageIndex = 0;
   loading = true;
 
   constructor(
@@ -31,15 +30,12 @@ export class ResortDetailsComponent {
       )
       .subscribe((project) => {
         this.project = project;
-        this.selectedImage = project?.images[0] ?? project?.heroImage ?? '';
-        this.selectedImageIndex = 0;
         this.loading = false;
       });
   }
 
-  selectImage(image: string, index: number): void {
-    this.selectedImage = image;
-    this.selectedImageIndex = index;
+  hasListItems(items: string[] | undefined | null): boolean {
+    return (items ?? []).some((s) => s.trim().length > 0);
   }
 
   openProjectLocation(): void {

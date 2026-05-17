@@ -1,7 +1,20 @@
-import { Component, Input } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  Input,
+  OnDestroy,
+  inject,
+} from '@angular/core';
+
+let popoverLayer: HTMLDivElement | null = null;
+let popoverOwner: AdminFieldHintComponent | null = null;
+let scrollHideHandler: (() => void) | null = null;
 
 /**
- * Info icon with hover/focus tooltip. Also sets native `title` for accessibility fallback.
+ * Info icon with hover/focus tooltip. Popover is portaled to `document.body` with fixed
+ * positioning so it is not clipped by modal `overflow` scroll areas.
  */
 @Component({
   selector: 'app-admin-field-hint',
@@ -14,7 +27,6 @@ import { Component, Input } from '@angular/core';
       [attr.aria-label]="'Hint: ' + text"
     >
       <span class="admin-field-hint-mark" aria-hidden="true">i</span>
-      <span class="admin-field-hint-popover" role="tooltip">{{ text }}</span>
     </span>
   `,
   styles: [
@@ -49,36 +61,102 @@ import { Component, Input } from '@angular/core';
         background: rgba(56, 189, 248, 0.22);
         border-color: var(--admin-accent);
       }
-      .admin-field-hint-popover {
-        position: absolute;
-        left: 50%;
-        bottom: calc(100% + 8px);
-        transform: translateX(-50%);
-        min-width: 200px;
-        max-width: min(320px, 70vw);
-        padding: 0.5rem 0.65rem;
-        border-radius: 8px;
-        font-size: 0.72rem;
-        font-weight: 500;
-        font-style: normal;
-        line-height: 1.45;
-        color: var(--admin-text);
-        background: #1e293b;
-        border: 1px solid var(--admin-border);
-        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
-        visibility: hidden;
-        opacity: 0;
-        pointer-events: none;
-        z-index: 200;
-      }
-      .admin-field-hint-host:hover .admin-field-hint-popover,
-      .admin-field-hint-host:focus-visible .admin-field-hint-popover {
-        visibility: visible;
-        opacity: 1;
-      }
     `,
   ],
 })
-export class AdminFieldHintComponent {
+export class AdminFieldHintComponent implements OnDestroy {
   @Input({ required: true }) text!: string;
+
+  private readonly doc = inject(DOCUMENT);
+  private readonly host = inject(ElementRef<HTMLElement>);
+
+  @HostListener('mouseenter')
+  @HostListener('focusin')
+  showPopover(): void {
+    const layer = this.ensureLayer();
+    popoverOwner = this;
+    layer.textContent = this.text;
+    layer.classList.add('is-visible');
+    this.positionLayer(layer);
+    this.bindScrollHide();
+  }
+
+  @HostListener('mouseleave', ['$event'])
+  @HostListener('focusout', ['$event'])
+  hidePopover(ev: FocusEvent | MouseEvent): void {
+    if (popoverOwner !== this) {
+      return;
+    }
+    if (ev.type === 'focusout') {
+      const next = (ev as FocusEvent).relatedTarget as Node | null;
+      if (next && this.host.nativeElement.contains(next)) {
+        return;
+      }
+    }
+    this.dismissLayer();
+  }
+
+  ngOnDestroy(): void {
+    if (popoverOwner === this) {
+      this.dismissLayer();
+    }
+  }
+
+  private ensureLayer(): HTMLDivElement {
+    if (!popoverLayer) {
+      popoverLayer = this.doc.createElement('div');
+      popoverLayer.className = 'admin-field-hint-popover-layer';
+      popoverLayer.setAttribute('role', 'tooltip');
+      this.doc.body.appendChild(popoverLayer);
+    }
+    return popoverLayer;
+  }
+
+  private positionLayer(layer: HTMLDivElement): void {
+    const hostRect = this.host.nativeElement.getBoundingClientRect();
+    layer.style.left = '0';
+    layer.style.top = '0';
+    layer.style.visibility = 'hidden';
+    layer.style.display = 'block';
+
+    const popW = layer.offsetWidth;
+    const popH = layer.offsetHeight;
+    const gap = 8;
+    const pad = 8;
+
+    let top = hostRect.top - popH - gap;
+    if (top < pad) {
+      top = hostRect.bottom + gap;
+    }
+
+    let left = hostRect.left + hostRect.width / 2 - popW / 2;
+    left = Math.max(pad, Math.min(left, window.innerWidth - popW - pad));
+
+    layer.style.left = `${Math.round(left)}px`;
+    layer.style.top = `${Math.round(top)}px`;
+    layer.style.visibility = '';
+  }
+
+  private bindScrollHide(): void {
+    this.unbindScrollHide();
+    scrollHideHandler = () => {
+      if (popoverOwner === this) {
+        this.dismissLayer();
+      }
+    };
+    this.doc.defaultView?.addEventListener('scroll', scrollHideHandler, true);
+  }
+
+  private unbindScrollHide(): void {
+    if (scrollHideHandler) {
+      this.doc.defaultView?.removeEventListener('scroll', scrollHideHandler, true);
+      scrollHideHandler = null;
+    }
+  }
+
+  private dismissLayer(): void {
+    popoverOwner = null;
+    popoverLayer?.classList.remove('is-visible');
+    this.unbindScrollHide();
+  }
 }

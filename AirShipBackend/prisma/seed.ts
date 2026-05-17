@@ -136,7 +136,6 @@ async function main(): Promise<void> {
         features: p.features,
         amenities: p.amenities,
         developerName: p.developerName,
-        deliveryDate: new Date(p.deliveryDate),
         mapEmbedUrl: p.mapEmbedUrl,
         videoUrl: p.videoUrl,
         city: { connect: { slug: p.citySlug } },

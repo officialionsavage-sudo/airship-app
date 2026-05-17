@@ -1,145 +1,95 @@
-import { NgFor, NgIf, SlicePipe } from '@angular/common';
+import { NgFor, NgIf } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { forkJoin } from 'rxjs';
 import { ADMIN_MSG, adminApiErrorMessage } from '../../core/admin-messages';
 import type { AdminPaginated } from '../../core/admin-paginated';
 import { apiUrl } from '../../core/api-url';
 import { AdminConfirmService } from '../../shared/admin-confirm/admin-confirm.service';
 import { AdminNoticeService } from '../../shared/admin-notice/admin-notice.service';
-import { AdminModalComponent } from '../../shared/admin-modal/admin-modal.component';
-import { AdminPaginationBarComponent } from '../../shared/admin-pagination-bar/admin-pagination-bar.component';
 import { AdminFieldHintComponent } from '../../shared/admin-field-hint/admin-field-hint.component';
-import { SITE_SETTING_HINTS } from '../../shared/admin-field-hint/admin-field-hints.constants';
-import { HelpPanelComponent } from '../../shared/help-panel/help-panel.component';
-import { AdminDateTimePipe } from '../../shared/pipes/admin-datetime.pipe';
+import { CONTACT_SETTING_FIELDS } from './site-contact-settings.fields';
 
-type Row = { key: string; value: string; updatedAt: string };
+type SettingRow = { key: string; value: string; updatedAt: string };
 
 @Component({
   selector: 'app-site-settings',
   standalone: true,
-  imports: [
-    FormsModule,
-    NgFor,
-    NgIf,
-    SlicePipe,
-    AdminDateTimePipe,
-    HelpPanelComponent,
-    AdminModalComponent,
-    AdminPaginationBarComponent,
-    AdminFieldHintComponent,
-  ],
+  imports: [FormsModule, NgFor, NgIf, AdminFieldHintComponent],
   template: `
     <h1 class="page-title">Site settings</h1>
     <p class="page-intro">
-      Phone number, WhatsApp, email, address, and opening hours used on the contact page and footer. Change the value in the box and click <strong>Save</strong> on that row.
+      Update phone, WhatsApp, email, address, and opening hours shown on the public website (contact page, footer, and WhatsApp buttons).
     </p>
-    <app-help-panel title="Built-in setting names">
-      Your developer may have added entries such as <code>contact_phone</code>, <code>contact_whatsapp</code>, <code>contact_email</code>, <code>contact_location</code>, and
-      <code>contact_hours_line_1</code> … <code>contact_hours_line_3</code>. Only add new rows if they gave you a specific name to use.
-    </app-help-panel>
-    <div class="admin-toolbar">
-      <button type="button" class="btn btn-primary" (click)="openCreateModal()">Add advanced setting</button>
-    </div>
-    <p *ngIf="listLoaded && rows.length === 0" class="admin-empty-state">No settings returned — check your connection or ask support.</p>
-    <div class="admin-table-wrap-cards" *ngIf="listLoaded && rows.length > 0">
-      <div class="admin-scroll">
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>
-                <span class="th-hint">
-                  Setting name
-                  <app-admin-field-hint [text]="ssHint.key" />
-                </span>
-              </th>
-              <th>
-                <span class="th-hint">
-                  Value
-                  <app-admin-field-hint [text]="ssHint.value" />
-                </span>
-              </th>
-              <th>Last updated</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let row of rows">
-              <td>
-                <code>{{ row.key }}</code>
-              </td>
-              <td><input [(ngModel)]="row.value" [name]="'v-' + row.key" /></td>
-              <td class="muted">{{ row.updatedAt | adminDateTime }}</td>
-              <td>
-                <button type="button" class="btn btn-primary" (click)="saveRow(row)">Save row</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="admin-cards">
-        <div class="admin-card" *ngFor="let row of rows">
-          <strong>{{ row.key }}</strong>
-          <input [(ngModel)]="row.value" />
-          <button type="button" class="btn btn-primary" (click)="saveRow(row)">Save row</button>
-        </div>
-      </div>
-    </div>
-    <app-admin-pagination-bar
-      itemLabel="settings"
-      [page]="page"
-      [pageSize]="pageSize"
-      [total]="total"
-      (pageChange)="onPage($event)"
-    />
 
-    <app-admin-modal [(open)]="createModalOpen" title="Add a setting">
-      <div class="modal-scroll-form">
-        <div class="field">
-          <label class="field-label-with-hint">
-            Key
-            <app-admin-field-hint [text]="ssHint.key" />
-          </label>
-          <input [(ngModel)]="newKey" />
-        </div>
-        <div class="field">
-          <label class="field-label-with-hint">
-            Value
-            <app-admin-field-hint [text]="ssHint.value" />
-          </label>
-          <input [(ngModel)]="newValue" />
-        </div>
-        <div class="admin-modal-actions">
-          <button type="button" class="btn btn-primary" (click)="create()">Save new setting</button>
-          <button type="button" class="btn" (click)="createModalOpen = false">Close</button>
-        </div>
-        <p class="err" *ngIf="error">{{ error }}</p>
+    <p *ngIf="loading" class="loading-msg">Loading contact information…</p>
+
+    <form *ngIf="!loading" class="contact-form" (ngSubmit)="save()">
+      <div class="field" *ngFor="let field of fields">
+        <label class="field-label-with-hint">
+          {{ field.label }}
+          <span *ngIf="field.required" class="req" aria-hidden="true">*</span>
+          <app-admin-field-hint *ngIf="field.hint" [text]="field.hint" />
+        </label>
+        <input
+          [(ngModel)]="values[field.key]"
+          [name]="field.key"
+          [type]="field.type ?? 'text'"
+          [placeholder]="field.placeholder ?? ''"
+          [disabled]="saving"
+        />
+        <p class="field-err" *ngIf="fieldErrors[field.key]">{{ fieldErrors[field.key] }}</p>
       </div>
-    </app-admin-modal>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="saving">
+          {{ saving ? 'Saving…' : 'Save changes' }}
+        </button>
+      </div>
+      <p class="form-err" *ngIf="formError">{{ formError }}</p>
+    </form>
   `,
   styles: [
     `
-      td input {
+      .loading-msg {
+        color: var(--admin-muted);
+      }
+      .contact-form {
+        max-width: 520px;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+      .field label {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        margin-bottom: 0.35rem;
+        font-weight: 500;
+      }
+      .req {
+        color: var(--admin-danger);
+      }
+      .field input {
         width: 100%;
-        min-width: 200px;
-        padding: 0.35rem 0.45rem;
+        padding: 0.45rem 0.55rem;
         border-radius: 6px;
         border: 1px solid var(--admin-border);
         background: #020617;
         color: var(--admin-text);
       }
-      .muted {
-        color: var(--admin-muted);
-        font-size: 0.8rem;
+      .field input:disabled {
+        opacity: 0.7;
       }
-      .err {
+      .field-err,
+      .form-err {
+        margin: 0.25rem 0 0;
         color: var(--admin-danger);
+        font-size: 0.85rem;
       }
-      .th-hint {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
+      .form-actions {
+        margin-top: 0.5rem;
       }
     `,
   ],
@@ -149,109 +99,91 @@ export class SiteSettingsComponent implements OnInit {
   private readonly confirm = inject(AdminConfirmService);
   private readonly notice = inject(AdminNoticeService);
 
-  readonly ssHint = SITE_SETTING_HINTS;
-  readonly pageSize = 20;
-  page = 1;
-  total = 0;
-  rows: Row[] = [];
-  listLoaded = false;
-  newKey = '';
-  newValue = '';
-  error = '';
-  createModalOpen = false;
+  readonly fields = CONTACT_SETTING_FIELDS;
+  values: Record<string, string> = {};
+  fieldErrors: Record<string, string> = {};
+  formError = '';
+  loading = true;
+  saving = false;
 
   ngOnInit(): void {
-    this.reload();
+    for (const field of this.fields) {
+      this.values[field.key] = '';
+    }
+    this.load();
   }
 
-  onPage(p: number): void {
-    this.page = p;
-    this.reload();
-  }
-
-  reload(): void {
+  private load(): void {
+    this.loading = true;
     this.http
-      .get<AdminPaginated<Row>>(apiUrl('/api/admin/site-settings'), {
-        params: { page: this.page, pageSize: this.pageSize },
+      .get<AdminPaginated<SettingRow>>(apiUrl('/api/admin/site-settings'), {
+        params: { page: 1, pageSize: 50 },
       })
       .subscribe({
         next: (r) => {
-          this.listLoaded = true;
-          this.rows = r.items;
-          this.total = r.total;
-          if (r.items.length === 0 && r.total > 0 && this.page > 1) {
-            this.page--;
-            this.reload();
+          const map: Record<string, string> = {};
+          for (const row of r.items) {
+            map[row.key] = row.value;
           }
+          for (const field of this.fields) {
+            this.values[field.key] = map[field.key]?.trim() ?? '';
+          }
+          this.loading = false;
         },
         error: () => {
-          this.listLoaded = true;
+          this.loading = false;
           this.notice.error(ADMIN_MSG.loadList);
         },
       });
   }
 
-  openCreateModal(): void {
-    this.newKey = '';
-    this.newValue = '';
-    this.error = '';
-    this.createModalOpen = true;
+  save(): void {
+    void this.saveAsync();
   }
 
-  saveRow(row: Row): void {
-    void this.saveRowAsync(row);
-  }
+  private async saveAsync(): Promise<void> {
+    this.fieldErrors = {};
+    this.formError = '';
 
-  private async saveRowAsync(row: Row): Promise<void> {
+    let valid = true;
+    for (const field of this.fields) {
+      if (!field.required) {
+        continue;
+      }
+      const v = (this.values[field.key] ?? '').trim();
+      if (!v) {
+        this.fieldErrors[field.key] = `${field.label} is required.`;
+        valid = false;
+      }
+    }
+    if (!valid) {
+      return;
+    }
+
     const ok = await this.confirm.open({
-      title: 'Save this setting?',
-      message: `Update “${row.key}” on the live website?`,
+      title: 'Save contact information?',
+      message: 'Update phone, WhatsApp, email, address, and hours on the live website?',
       confirmLabel: 'Save',
     });
     if (!ok) {
       return;
     }
-    this.error = '';
-    this.http.put(apiUrl(`/api/admin/site-settings/${encodeURIComponent(row.key)}`), { value: row.value }).subscribe({
+
+    this.saving = true;
+    const puts = this.fields.map((field) =>
+      this.http.put(apiUrl(`/api/admin/site-settings/${encodeURIComponent(field.key)}`), {
+        value: (this.values[field.key] ?? '').trim(),
+      }),
+    );
+
+    forkJoin(puts).subscribe({
       next: () => {
-        this.notice.success(`Saved “${row.key}”.`);
-        this.reload();
+        this.saving = false;
+        this.notice.success('Contact information saved.');
       },
       error: (e) => {
-        this.notice.error(adminApiErrorMessage(e, ADMIN_MSG.save));
-      },
-    });
-  }
-
-  create(): void {
-    void this.createAsync();
-  }
-
-  private async createAsync(): Promise<void> {
-    const k = this.newKey.trim();
-    if (!k) {
-      this.error = 'Please enter a setting name (your developer will tell you which name to use).';
-      return;
-    }
-    const ok = await this.confirm.open({
-      title: 'Add this setting?',
-      message: `Create “${k}” with the value you entered?`,
-      confirmLabel: 'Create',
-    });
-    if (!ok) {
-      return;
-    }
-    this.error = '';
-    this.http.put(apiUrl(`/api/admin/site-settings/${encodeURIComponent(k)}`), { value: this.newValue }).subscribe({
-      next: () => {
-        this.createModalOpen = false;
-        this.newKey = '';
-        this.newValue = '';
-        this.notice.success('Setting added.');
-        this.reload();
-      },
-      error: (e) => {
-        this.error = adminApiErrorMessage(e, ADMIN_MSG.save);
+        this.saving = false;
+        this.formError = adminApiErrorMessage(e, ADMIN_MSG.save);
       },
     });
   }
