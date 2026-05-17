@@ -35,9 +35,12 @@ import { AdminConfirmService } from '../../shared/admin-confirm/admin-confirm.se
   ],
   template: `
     <a routerLink="/cms/site-content">← Back to all sections</a>
-    <h1 class="page-title">Edit: {{ key }}</h1>
-    <p class="page-intro" *ngIf="key === 'home'">
+    <h1 class="page-title">{{ key === 'home' ? (auth.canWrite() ? 'Edit home page' : 'View home page') : 'Edit: ' + key }}</h1>
+    <p class="page-intro" *ngIf="key === 'home' && auth.canWrite()">
       Choose a language, edit fields, and use the preview — then <strong>Save</strong> to publish all locales together.
+    </p>
+    <p class="page-intro" *ngIf="key === 'home' && auth.isReadOnly()">
+      Read-only preview of the home page copy. Sign in as admin to publish changes.
     </p>
     <app-help-panel title="Keys other than home">
       <p>

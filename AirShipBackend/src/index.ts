@@ -19,6 +19,7 @@ import compression from 'compression';
 import swaggerUi from 'swagger-ui-express';
 import { createApiRouter } from './routes/index.js';
 import { openapiSpecification } from './openapi-document.js';
+import { ensureDefaultSiteContent } from './ensure-default-site-content.js';
 import { prisma } from './prisma.js';
 import { ensureMediaRoot, getMediaRoot, MEDIA_URL_PREFIX } from './media-storage.js';
 import { apiGeneralLimiter, helmetMiddleware } from './security.js';
@@ -109,6 +110,7 @@ const server = app.listen(port, () => {
   console.log(`Swagger UI http://localhost:${port}/api-docs`);
   void prisma
     .$connect()
+    .then(() => ensureDefaultSiteContent())
     .then(() => console.log('Prisma: database connection ready'))
     .catch((e: unknown) => console.error('Prisma: initial $connect failed', e));
 });
