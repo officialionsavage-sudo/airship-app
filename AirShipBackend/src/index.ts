@@ -7,6 +7,14 @@ import express from 'express';
 /** Load `.env` from `AirShipBackend/` even when `node`/`tsx` is started with another cwd. */
 const backendRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 dotenv.config({ path: path.join(backendRoot, '.env') });
+
+const databaseUrl = process.env.DATABASE_URL?.trim();
+if (!databaseUrl) {
+  console.error(
+    'FATAL: DATABASE_URL is missing or empty. On Railway, link the Postgres service or set DATABASE_URL=${{Postgres.DATABASE_URL}} on the API service.',
+  );
+  process.exit(1);
+}
 import compression from 'compression';
 import swaggerUi from 'swagger-ui-express';
 import { createApiRouter } from './routes/index.js';
@@ -60,7 +68,16 @@ app.use((req, res, next) => {
 
 const rawCors = process.env.CORS_ORIGIN;
 const corsList = rawCors ? rawCors.split(',').map((s) => s.trim()).filter(Boolean) : [];
-app.use(corsList.length ? cors({ origin: corsList }) : cors());
+if (!corsList.length && process.env.NODE_ENV === 'production') {
+  console.warn(
+    'CORS_ORIGIN is unset — allowing all origins. Set explicit SPA URLs in production (e.g. http://localhost:4201,https://your-admin.vercel.app).',
+  );
+}
+app.use(
+  corsList.length
+    ? cors({ origin: corsList })
+    : cors(),
+);
 
 app.use('/api', (req, res, next) => {
   if (req.path.startsWith('/admin')) {

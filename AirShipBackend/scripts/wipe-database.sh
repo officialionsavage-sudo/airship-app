@@ -6,6 +6,13 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+if [[ -z "${DATABASE_URL:-}" && -f .env ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  source .env
+  set +a
+fi
+
 if [[ -z "${DATABASE_URL:-}" ]]; then
   echo "Set DATABASE_URL (Railway DATABASE_PUBLIC_URL + ?sslmode=require)" >&2
   exit 1

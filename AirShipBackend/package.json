@@ -16,6 +16,7 @@
     "db:down": "docker compose -f ../docker-compose.yml down",
     "db:logs": "docker compose -f ../docker-compose.yml logs -f postgres",
     "db:seed": "prisma db seed",
+    "db:seed:light": "SEED_TINY=1 prisma db seed",
     "db:seed:bulk": "tsx prisma/seed-bulk-fake.ts",
     "db:seed:resume": "tsx prisma/seed-resume.ts",
     "db:wipe": "bash scripts/wipe-database.sh",

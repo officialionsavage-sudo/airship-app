@@ -1,0 +1,26 @@
+Railway API service — paste these in Variables (AirShipBackend root service)
+================================================================================
+
+Required (link Postgres plugin or set DATABASE_URL manually):
+
+  DATABASE_URL=postgresql://postgres:aGWdQzFlkxxxSxyVtNuRvzxnjgyUsqqm@postgres.railway.internal:5432/railway
+
+  Or use reference:  DATABASE_URL=${{Postgres.DATABASE_URL}}
+
+Admin login (HTTP Basic on /api/admin/*):
+
+  ADMIN_USERNAME=admin
+  ADMIN_PASSWORD=admin123
+
+CORS (include local admin SPA when testing from laptop):
+
+  CORS_ORIGIN=http://localhost:4200,http://localhost:4201,http://127.0.0.1:4200,http://127.0.0.1:4201
+
+Media URLs in API responses:
+
+  MEDIA_PUBLIC_BASE_URL=https://airship-app-production.up.railway.app
+
+Do NOT set DATABASE_URL to caboose.proxy.rlwy.net on the API service — use internal host only.
+Public proxy URL is for your Mac .env (Prisma, imports). See AirShipBackend/.env.example.
+
+After saving variables, redeploy the API service. Logs should show prisma migrate deploy then listening.

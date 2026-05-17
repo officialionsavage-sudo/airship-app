@@ -1,0 +1,20 @@
+{
+  "/api": {
+    "target": "https://airship-app-production.up.railway.app",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "silent"
+  },
+  "/media": {
+    "target": "https://airship-app-production.up.railway.app",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "silent"
+  },
+  "/health": {
+    "target": "https://airship-app-production.up.railway.app",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "silent"
+  }
+}
